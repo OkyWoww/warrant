@@ -1,0 +1,680 @@
+{
+  "timestamp_utc": "2026-10-29T07:55:02Z",
+  "task_id": "T13",
+  "benchmark_freeze_status": "FROZEN (38 targets: 32 bench/pairs + 5 bench/rustsec_anon + 1 bench/real_world_demo)",
+  "toolchain": "nightly-2026-10-20",
+  "rustc_version": "cargo 1.101.0-nightly (3960fa69b 2026-10-12)",
+  "miri_version": "miri 0.1.0 (07e526db9d 2026-10-19)",
+  "primary_model": "muse-spark-1.3 (resolved: muse-spark-1.3-contributor)",
+  "open_weights_model": "muse-spark-open-1026 — Stub / Unmeasured (No partner endpoint credits)",
+  "table_a_verifier_determinism": {
+    "description": "Deterministic Miri operational verification across all 38 frozen targets (22 bug targets + 16 safe controls) over 3 independent full runs.",
+    "runs": [
+      {
+        "run_number": 1,
+        "elapsed_seconds": 93.17,
+        "total_targets": 38,
+        "bug_targets": 22,
+        "safe_controls": 16,
+        "proven_public": 22,
+        "proven_internal": 0,
+        "unproven_bug_targets": 0,
+        "safe_controls_clean": 16,
+        "false_proofs": 0,
+        "proof_rate_pct": 100.0,
+        "false_proof_rate_pct": 0.0,
+        "pairs_mutants_proven": "16/16",
+        "pairs_safe_clean": "16/16",
+        "rustsec_anon_proven": "5/5",
+        "real_world_demo_proven": "1/1"
+      },
+      {
+        "run_number": 2,
+        "elapsed_seconds": 99.37,
+        "total_targets": 38,
+        "bug_targets": 22,
+        "safe_controls": 16,
+        "proven_public": 22,
+        "proven_internal": 0,
+        "unproven_bug_targets": 0,
+        "safe_controls_clean": 16,
+        "false_proofs": 0,
+        "proof_rate_pct": 100.0,
+        "false_proof_rate_pct": 0.0,
+        "pairs_mutants_proven": "16/16",
+        "pairs_safe_clean": "16/16",
+        "rustsec_anon_proven": "5/5",
+        "real_world_demo_proven": "1/1"
+      },
+      {
+        "run_number": 3,
+        "elapsed_seconds": 83.58,
+        "total_targets": 38,
+        "bug_targets": 22,
+        "safe_controls": 16,
+        "proven_public": 22,
+        "proven_internal": 0,
+        "unproven_bug_targets": 0,
+        "safe_controls_clean": 16,
+        "false_proofs": 0,
+        "proof_rate_pct": 100.0,
+        "false_proof_rate_pct": 0.0,
+        "pairs_mutants_proven": "16/16",
+        "pairs_safe_clean": "16/16",
+        "rustsec_anon_proven": "5/5",
+        "real_world_demo_proven": "1/1"
+      }
+    ],
+    "proof_rate_pct": {
+      "mean": 100.0,
+      "variance": 0.0,
+      "std_dev": 0.0
+    },
+    "false_proof_rate_pct": {
+      "mean": 0.0,
+      "variance": 0.0,
+      "std_dev": 0.0
+    },
+    "elapsed_seconds": {
+      "mean": 92.04,
+      "variance": 63.2887,
+      "std_dev": 7.9554
+    },
+    "frozen_suite_proof_rate_95_ci": "[84.56%, 100.00%] (Two-sided 95% CI) / > 87.27% (One-sided 95% lower)",
+    "safe_controls_false_proof_95_ci": "[0.00%, 20.59%] (Two-sided 95% CI) / < 17.07% (One-sided 95% upper)"
+  },
+  "table_b_autonomous_model_performance": {
+    "description": "End-to-end autonomous model synthesis (`muse-spark-1.3` live HTTP calls, max 4 repair rounds per bug target, max 3 patch rounds per proven finding).",
+    "model": "muse-spark-1.3 (resolved: muse-spark-1.3-contributor)",
+    "live_passes_executed": 2,
+    "bug_targets_per_pass": 22,
+    "passes": [
+      {
+        "pass_number": 1,
+        "elapsed_seconds": 106.51,
+        "evaluated_bug_targets": 22,
+        "valid_at_1_count": 17,
+        "valid_at_1_pct": 77.27,
+        "valid_at_1_95_ci": "[54.63%, 92.18%] (Two-sided 95% CI) / < 90.59% (One-sided 95% upper)",
+        "valid_at_4_count": 22,
+        "valid_at_4_pct": 100.0,
+        "valid_at_4_95_ci": "[84.56%, 100.00%] (Two-sided 95% CI) / > 87.27% (One-sided 95% lower)",
+        "proven_count": 22,
+        "model_proof_rate_pct": 100.0,
+        "model_proof_rate_95_ci": "[84.56%, 100.00%] (Two-sided 95% CI) / > 87.27% (One-sided 95% lower)",
+        "pairs_mutants_proven": "16/16",
+        "rustsec_anon_proven": "5/5",
+        "real_world_demo_proven": "1/1",
+        "false_proofs_on_safe_controls": "0/16 (0.0% on 16 safe controls; 0/9 live safe evaluations)",
+        "http_calls": 29,
+        "prompt_tokens": 23249,
+        "completion_tokens": 118594,
+        "cost_usd": 0.53106,
+        "per_target": [
+          {
+            "id": "r1_01_mutant",
+            "set_name": "bench/pairs",
+            "rule": "R1",
+            "valid_at_1": true,
+            "valid_at_4": true,
+            "proven": true,
+            "rounds_used": 1,
+            "matched_signature": "unsafe precondition(s) violated: slice::get_unchecked requires that the index is within the slice"
+          },
+          {
+            "id": "r1_02_mutant",
+            "set_name": "bench/pairs",
+            "rule": "R1",
+            "valid_at_1": true,
+            "valid_at_4": true,
+            "proven": true,
+            "rounds_used": 1,
+            "matched_signature": "error: Undefined Behavior: in-bounds pointer arithmetic failed"
+          },
+          {
+            "id": "r1_03_mutant",
+            "set_name": "bench/pairs",
+            "rule": "R1",
+            "valid_at_1": true,
+            "valid_at_4": true,
+            "proven": true,
+            "rounds_used": 1,
+            "matched_signature": "error: Undefined Behavior: dangling reference (going beyond the bounds of its allocation)"
+          },
+          {
+            "id": "r1_04_mutant",
+            "set_name": "bench/pairs",
+            "rule": "R1",
+            "valid_at_1": true,
+            "valid_at_4": true,
+            "proven": true,
+            "rounds_used": 1,
+            "matched_signature": "unsafe precondition(s) violated: slice::get_unchecked_mut requires that the index is within the slice"
+          },
+          {
+            "id": "r1_05_mutant",
+            "set_name": "bench/pairs",
+            "rule": "R1",
+            "valid_at_1": false,
+            "valid_at_4": true,
+            "proven": true,
+            "rounds_used": 2,
+            "matched_signature": "error: Undefined Behavior: memory access failed"
+          },
+          {
+            "id": "r1_06_mutant",
+            "set_name": "bench/pairs",
+            "rule": "R1",
+            "valid_at_1": true,
+            "valid_at_4": true,
+            "proven": true,
+            "rounds_used": 1,
+            "matched_signature": "error: Undefined Behavior: in-bounds pointer arithmetic failed"
+          },
+          {
+            "id": "r1_07_mutant",
+            "set_name": "bench/pairs",
+            "rule": "R1",
+            "valid_at_1": true,
+            "valid_at_4": true,
+            "proven": true,
+            "rounds_used": 1,
+            "matched_signature": "unsafe precondition(s) violated: slice::get_unchecked requires that the range is within the slice"
+          },
+          {
+            "id": "r1_08_mutant",
+            "set_name": "bench/pairs",
+            "rule": "R1",
+            "valid_at_1": true,
+            "valid_at_4": true,
+            "proven": true,
+            "rounds_used": 1,
+            "matched_signature": "unsafe precondition(s) violated: slice::get_unchecked requires that the index is within the slice"
+          },
+          {
+            "id": "r2_01_mutant",
+            "set_name": "bench/pairs",
+            "rule": "R2",
+            "valid_at_1": true,
+            "valid_at_4": true,
+            "proven": true,
+            "rounds_used": 1,
+            "matched_signature": "error: Undefined Behavior: Data race detected between"
+          },
+          {
+            "id": "r2_02_mutant",
+            "set_name": "bench/pairs",
+            "rule": "R2",
+            "valid_at_1": true,
+            "valid_at_4": true,
+            "proven": true,
+            "rounds_used": 1,
+            "matched_signature": "error: Undefined Behavior: Data race detected between"
+          },
+          {
+            "id": "r2_03_mutant",
+            "set_name": "bench/pairs",
+            "rule": "R2",
+            "valid_at_1": true,
+            "valid_at_4": true,
+            "proven": true,
+            "rounds_used": 1,
+            "matched_signature": "error: Undefined Behavior: Data race detected between"
+          },
+          {
+            "id": "r2_04_mutant",
+            "set_name": "bench/pairs",
+            "rule": "R2",
+            "valid_at_1": true,
+            "valid_at_4": true,
+            "proven": true,
+            "rounds_used": 1,
+            "matched_signature": "error: Undefined Behavior: Data race detected between"
+          },
+          {
+            "id": "r2_05_mutant",
+            "set_name": "bench/pairs",
+            "rule": "R2",
+            "valid_at_1": false,
+            "valid_at_4": true,
+            "proven": true,
+            "rounds_used": 2,
+            "matched_signature": "error: Undefined Behavior: Data race detected between"
+          },
+          {
+            "id": "r2_06_mutant",
+            "set_name": "bench/pairs",
+            "rule": "R2",
+            "valid_at_1": false,
+            "valid_at_4": true,
+            "proven": true,
+            "rounds_used": 4,
+            "matched_signature": "error: Undefined Behavior: Data race detected between"
+          },
+          {
+            "id": "r2_07_mutant",
+            "set_name": "bench/pairs",
+            "rule": "R2",
+            "valid_at_1": false,
+            "valid_at_4": true,
+            "proven": true,
+            "rounds_used": 2,
+            "matched_signature": "error: Undefined Behavior: Data race detected between"
+          },
+          {
+            "id": "r2_08_mutant",
+            "set_name": "bench/pairs",
+            "rule": "R2",
+            "valid_at_1": true,
+            "valid_at_4": true,
+            "proven": true,
+            "rounds_used": 1,
+            "matched_signature": "error: Undefined Behavior: Data race detected between"
+          },
+          {
+            "id": "rustsec_anon_01",
+            "set_name": "bench/rustsec_anon",
+            "rule": "R1",
+            "valid_at_1": false,
+            "valid_at_4": true,
+            "proven": true,
+            "rounds_used": 2,
+            "matched_signature": "error: Undefined Behavior: memory access failed"
+          },
+          {
+            "id": "rustsec_anon_02",
+            "set_name": "bench/rustsec_anon",
+            "rule": "R1",
+            "valid_at_1": true,
+            "valid_at_4": true,
+            "proven": true,
+            "rounds_used": 1,
+            "matched_signature": "error: Undefined Behavior: in-bounds pointer arithmetic failed"
+          },
+          {
+            "id": "rustsec_anon_03",
+            "set_name": "bench/rustsec_anon",
+            "rule": "R1",
+            "valid_at_1": true,
+            "valid_at_4": true,
+            "proven": true,
+            "rounds_used": 1,
+            "matched_signature": "error: Undefined Behavior: dangling reference (going beyond the bounds of its allocation)"
+          },
+          {
+            "id": "rustsec_anon_04",
+            "set_name": "bench/rustsec_anon",
+            "rule": "R2",
+            "valid_at_1": true,
+            "valid_at_4": true,
+            "proven": true,
+            "rounds_used": 1,
+            "matched_signature": "error: Undefined Behavior: Data race detected between"
+          },
+          {
+            "id": "rustsec_anon_05",
+            "set_name": "bench/rustsec_anon",
+            "rule": "R2",
+            "valid_at_1": true,
+            "valid_at_4": true,
+            "proven": true,
+            "rounds_used": 1,
+            "matched_signature": "error: Undefined Behavior: Data race detected between"
+          },
+          {
+            "id": "real_world_demo",
+            "set_name": "bench/real_world_demo",
+            "rule": "R1",
+            "valid_at_1": true,
+            "valid_at_4": true,
+            "proven": true,
+            "rounds_used": 1,
+            "matched_signature": "error: Undefined Behavior: memory access failed"
+          }
+        ]
+      },
+      {
+        "pass_number": 2,
+        "elapsed_seconds": 111.28,
+        "evaluated_bug_targets": 22,
+        "valid_at_1_count": 18,
+        "valid_at_1_pct": 81.82,
+        "valid_at_1_95_ci": "[59.72%, 94.81%] (Two-sided 95% CI) / < 93.54% (One-sided 95% upper)",
+        "valid_at_4_count": 22,
+        "valid_at_4_pct": 100.0,
+        "valid_at_4_95_ci": "[84.56%, 100.00%] (Two-sided 95% CI) / > 87.27% (One-sided 95% lower)",
+        "proven_count": 22,
+        "model_proof_rate_pct": 100.0,
+        "model_proof_rate_95_ci": "[84.56%, 100.00%] (Two-sided 95% CI) / > 87.27% (One-sided 95% lower)",
+        "pairs_mutants_proven": "16/16",
+        "rustsec_anon_proven": "5/5",
+        "real_world_demo_proven": "1/1",
+        "false_proofs_on_safe_controls": "0/16 (0.0% on 16 safe controls; 0/9 live safe evaluations)",
+        "http_calls": 28,
+        "prompt_tokens": 23171,
+        "completion_tokens": 114204,
+        "cost_usd": 0.507838,
+        "per_target": [
+          {
+            "id": "r1_01_mutant",
+            "set_name": "bench/pairs",
+            "rule": "R1",
+            "valid_at_1": true,
+            "valid_at_4": true,
+            "proven": true,
+            "rounds_used": 1,
+            "matched_signature": "unsafe precondition(s) violated: slice::get_unchecked requires that the index is within the slice"
+          },
+          {
+            "id": "r1_02_mutant",
+            "set_name": "bench/pairs",
+            "rule": "R1",
+            "valid_at_1": true,
+            "valid_at_4": true,
+            "proven": true,
+            "rounds_used": 1,
+            "matched_signature": "error: Undefined Behavior: in-bounds pointer arithmetic failed"
+          },
+          {
+            "id": "r1_03_mutant",
+            "set_name": "bench/pairs",
+            "rule": "R1",
+            "valid_at_1": true,
+            "valid_at_4": true,
+            "proven": true,
+            "rounds_used": 1,
+            "matched_signature": "error: Undefined Behavior: dangling reference (going beyond the bounds of its allocation)"
+          },
+          {
+            "id": "r1_04_mutant",
+            "set_name": "bench/pairs",
+            "rule": "R1",
+            "valid_at_1": true,
+            "valid_at_4": true,
+            "proven": true,
+            "rounds_used": 1,
+            "matched_signature": "unsafe precondition(s) violated: slice::get_unchecked_mut requires that the index is within the slice"
+          },
+          {
+            "id": "r1_05_mutant",
+            "set_name": "bench/pairs",
+            "rule": "R1",
+            "valid_at_1": false,
+            "valid_at_4": true,
+            "proven": true,
+            "rounds_used": 2,
+            "matched_signature": "error: Undefined Behavior: memory access failed"
+          },
+          {
+            "id": "r1_06_mutant",
+            "set_name": "bench/pairs",
+            "rule": "R1",
+            "valid_at_1": true,
+            "valid_at_4": true,
+            "proven": true,
+            "rounds_used": 1,
+            "matched_signature": "error: Undefined Behavior: in-bounds pointer arithmetic failed"
+          },
+          {
+            "id": "r1_07_mutant",
+            "set_name": "bench/pairs",
+            "rule": "R1",
+            "valid_at_1": true,
+            "valid_at_4": true,
+            "proven": true,
+            "rounds_used": 1,
+            "matched_signature": "unsafe precondition(s) violated: slice::get_unchecked requires that the range is within the slice"
+          },
+          {
+            "id": "r1_08_mutant",
+            "set_name": "bench/pairs",
+            "rule": "R1",
+            "valid_at_1": true,
+            "valid_at_4": true,
+            "proven": true,
+            "rounds_used": 1,
+            "matched_signature": "unsafe precondition(s) violated: slice::get_unchecked requires that the index is within the slice"
+          },
+          {
+            "id": "r2_01_mutant",
+            "set_name": "bench/pairs",
+            "rule": "R2",
+            "valid_at_1": true,
+            "valid_at_4": true,
+            "proven": true,
+            "rounds_used": 1,
+            "matched_signature": "error: Undefined Behavior: Data race detected between"
+          },
+          {
+            "id": "r2_02_mutant",
+            "set_name": "bench/pairs",
+            "rule": "R2",
+            "valid_at_1": false,
+            "valid_at_4": true,
+            "proven": true,
+            "rounds_used": 2,
+            "matched_signature": "error: Undefined Behavior: Data race detected between"
+          },
+          {
+            "id": "r2_03_mutant",
+            "set_name": "bench/pairs",
+            "rule": "R2",
+            "valid_at_1": true,
+            "valid_at_4": true,
+            "proven": true,
+            "rounds_used": 1,
+            "matched_signature": "error: Undefined Behavior: Data race detected between"
+          },
+          {
+            "id": "r2_04_mutant",
+            "set_name": "bench/pairs",
+            "rule": "R2",
+            "valid_at_1": true,
+            "valid_at_4": true,
+            "proven": true,
+            "rounds_used": 1,
+            "matched_signature": "error: Undefined Behavior: Data race detected between"
+          },
+          {
+            "id": "r2_05_mutant",
+            "set_name": "bench/pairs",
+            "rule": "R2",
+            "valid_at_1": true,
+            "valid_at_4": true,
+            "proven": true,
+            "rounds_used": 1,
+            "matched_signature": "error: Undefined Behavior: Data race detected between"
+          },
+          {
+            "id": "r2_06_mutant",
+            "set_name": "bench/pairs",
+            "rule": "R2",
+            "valid_at_1": true,
+            "valid_at_4": true,
+            "proven": true,
+            "rounds_used": 1,
+            "matched_signature": "error: Undefined Behavior: Data race detected between"
+          },
+          {
+            "id": "r2_07_mutant",
+            "set_name": "bench/pairs",
+            "rule": "R2",
+            "valid_at_1": true,
+            "valid_at_4": true,
+            "proven": true,
+            "rounds_used": 1,
+            "matched_signature": "error: Undefined Behavior: Data race detected between"
+          },
+          {
+            "id": "r2_08_mutant",
+            "set_name": "bench/pairs",
+            "rule": "R2",
+            "valid_at_1": true,
+            "valid_at_4": true,
+            "proven": true,
+            "rounds_used": 1,
+            "matched_signature": "error: Undefined Behavior: Data race detected between"
+          },
+          {
+            "id": "rustsec_anon_01",
+            "set_name": "bench/rustsec_anon",
+            "rule": "R1",
+            "valid_at_1": false,
+            "valid_at_4": true,
+            "proven": true,
+            "rounds_used": 4,
+            "matched_signature": "error: Undefined Behavior: in-bounds pointer arithmetic failed"
+          },
+          {
+            "id": "rustsec_anon_02",
+            "set_name": "bench/rustsec_anon",
+            "rule": "R1",
+            "valid_at_1": true,
+            "valid_at_4": true,
+            "proven": true,
+            "rounds_used": 1,
+            "matched_signature": "error: Undefined Behavior: in-bounds pointer arithmetic failed"
+          },
+          {
+            "id": "rustsec_anon_03",
+            "set_name": "bench/rustsec_anon",
+            "rule": "R1",
+            "valid_at_1": true,
+            "valid_at_4": true,
+            "proven": true,
+            "rounds_used": 1,
+            "matched_signature": "error: Undefined Behavior: dangling reference (going beyond the bounds of its allocation)"
+          },
+          {
+            "id": "rustsec_anon_04",
+            "set_name": "bench/rustsec_anon",
+            "rule": "R2",
+            "valid_at_1": true,
+            "valid_at_4": true,
+            "proven": true,
+            "rounds_used": 1,
+            "matched_signature": "error: Undefined Behavior: Data race detected between"
+          },
+          {
+            "id": "rustsec_anon_05",
+            "set_name": "bench/rustsec_anon",
+            "rule": "R2",
+            "valid_at_1": true,
+            "valid_at_4": true,
+            "proven": true,
+            "rounds_used": 1,
+            "matched_signature": "error: Undefined Behavior: Data race detected between"
+          },
+          {
+            "id": "real_world_demo",
+            "set_name": "bench/real_world_demo",
+            "rule": "R1",
+            "valid_at_1": false,
+            "valid_at_4": true,
+            "proven": true,
+            "rounds_used": 2,
+            "matched_signature": "error: Undefined Behavior: in-bounds pointer arithmetic failed"
+          }
+        ]
+      }
+    ],
+    "valid_at_1_pct": {
+      "mean": 79.54,
+      "variance": 10.3512,
+      "std_dev": 3.2173
+    },
+    "valid_at_4_pct": {
+      "mean": 100.0,
+      "variance": 0.0,
+      "std_dev": 0.0
+    },
+    "model_proof_rate_pct": {
+      "mean": 100.0,
+      "variance": 0.0,
+      "std_dev": 0.0
+    },
+    "patch_verification_targets": 17,
+    "patch_verified_count": 17,
+    "patch_verified_rate_pct": 100.0,
+    "patch_verified_95_ci": "[80.49%, 100.00%] (Two-sided 95% CI) / > 83.84% (One-sided 95% lower)"
+  },
+  "cost_summary": {
+    "total_http_calls": 121,
+    "calls_without_usage": 0,
+    "total_prompt_tokens": 90836,
+    "total_completion_tokens": 355287,
+    "cumulative_spend_usd": 1.611475,
+    "global_circuit_breaker_usd": 105.0,
+    "remaining_circuit_breaker_usd": 103.388525,
+    "initial_event_credit_usd": 150.0,
+    "remaining_event_credit_usd": 148.388525,
+    "experiments": [
+      {
+        "experiment": "T2 API Smoke Probe (probe)",
+        "model": "muse-spark-1.3",
+        "evaluated_cases": 1,
+        "http_calls": 1,
+        "prompt_tokens": 16,
+        "completion_tokens": 15,
+        "mean_latency_ms": 1957,
+        "cost_usd": 0.000086,
+        "headline_metrics": "HTTP 200 OK, resolved model muse-spark-1.3-contributor"
+      },
+      {
+        "experiment": "T5/T10 Gate 1 Seeded Synthesis (eval_gate1 --backend meta)",
+        "model": "muse-spark-1.3",
+        "evaluated_cases": 8,
+        "http_calls": 9,
+        "prompt_tokens": 6955,
+        "completion_tokens": 36956,
+        "mean_latency_ms": 15219,
+        "cost_usd": 0.163977,
+        "headline_metrics": "valid@1 = 7/8 (87.5%), valid@4 = 8/8 (100.0%), Proven = 6/8 (75.0%), False Proofs = 0/8"
+      },
+      {
+        "experiment": "T8 Baselines Unverified LLM (eval_baselines --backend meta)",
+        "model": "muse-spark-1.3",
+        "evaluated_cases": 32,
+        "http_calls": 32,
+        "prompt_tokens": 6909,
+        "completion_tokens": 26958,
+        "mean_latency_ms": 4235,
+        "cost_usd": 0.123208,
+        "headline_metrics": "Unverified LLM: 12/16 TP (75.0%), 0/16 FP (0.0%), 0/16 Miri-Verified Operational Proofs"
+      },
+      {
+        "experiment": "T11 Full Patch Verification Loop (eval_patches --backend meta, 17 targets)",
+        "model": "muse-spark-1.3",
+        "evaluated_cases": 17,
+        "http_calls": 17,
+        "prompt_tokens": 26154,
+        "completion_tokens": 42869,
+        "mean_latency_ms": 11563,
+        "cost_usd": 0.214093,
+        "headline_metrics": "PATCH_VERIFIED = 17/17 (100.0%, AST guard + proof_* Miri + native + sanity_* Miri)"
+      },
+      {
+        "experiment": "T12 Flagship Demo Live Capture (warrant demo --backend meta-api -> docs/DEMO_CACHE.json)",
+        "model": "muse-spark-1.3",
+        "evaluated_cases": 3,
+        "http_calls": 5,
+        "prompt_tokens": 4382,
+        "completion_tokens": 15691,
+        "mean_latency_ms": 12462,
+        "cost_usd": 0.071213,
+        "headline_metrics": "2/2 PROVEN_PUBLIC + 2/2 PATCH_VERIFIED (Round 1) + 1/1 UNPROVEN"
+      },
+      {
+        "experiment": "T13 Multi-Pass Live Benchmark Synthesis (2 passes x 22 frozen bug targets)",
+        "model": "muse-spark-1.3",
+        "evaluated_cases": 44,
+        "http_calls": 57,
+        "prompt_tokens": 46420,
+        "completion_tokens": 232798,
+        "mean_latency_ms": 15958,
+        "cost_usd": 1.038898,
+        "headline_metrics": "Pass #1: valid@1=17/22 (77.27%), valid@4=22/22 (100.00%), Proven=22/22 (100.00%) | Pass #2: valid@1=18/22 (81.82%), valid@4=22/22 (100.00%), Proven=22/22 (100.00%)"
+      }
+    ]
+  }
+}

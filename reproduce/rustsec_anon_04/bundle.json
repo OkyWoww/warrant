@@ -1,0 +1,72 @@
+{
+  "bundle_id": "evb-62060546caff4ae985fe9035c948ac98",
+  "candidate_id": "c-0001",
+  "target_commit": "0000000000000000000000000000000000000000",
+  "toolchain": "nightly-2026-10-20",
+  "miri_flags": [
+    "-Zmiri-tree-borrows",
+    "-Zmiri-strict-provenance",
+    "-Zmiri-preemption-rate=0"
+  ],
+  "commands": [
+    "cargo +nightly-2026-10-20 miri test --lib warrant_proof::proof_"
+  ],
+  "stdout": "\nrunning 1 test\ntest warrant_proof::proof_rustsec_anon_04 ... ",
+  "stderr": "   Compiling warrant-verification-target v0.1.0 (C:\\Users\\ADMIN\\AppData\\Local\\Temp\\.tmplGpoNO)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.22s\n     Running unittests src\\lib.rs (target\\miri\\x86_64-pc-windows-msvc\\debug\\build\\warrant-verification-target/5cbe5bcd3d0b813a\\out\\warrant_verification_target-5cbe5bcd3d0b813a.exe)\nerror: Undefined Behavior: Data race detected between (1) non-atomic write on thread `unnamed-3` and (2) retag read of type `u64` on thread `unnamed-2` at alloc48341+0x10\n   --> C:\\Users\\ADMIN\\.rustup\\toolchains\\nightly-2026-10-20-x86_64-pc-windows-msvc\\lib\\rustlib\\src\\rust\\library\\core\\src\\cell.rs:516:31\n    |\n516 |         mem::replace(unsafe { &mut *self.value.get() }, val)\n    |                               ^^^^^^^^^^^^^^^^^^^^^^ (2) just happened here\n    |\nhelp: and (1) occurred earlier here\n   --> src\\lib.rs:28:9\n    |\n 28 |         self.inner.set(val);\n    |         ^^^^^^^^^^^^^^^^^^^\n    = help: retags occur on all (re)borrows and as well as when references are copied or moved\n    = help: retags permit optimizations that insert speculative reads or writes\n    = help: therefore from the perspective of data races, a retag has the same implications as a read or write\n    = help: this indicates a bug in the program: it performed an invalid operation, and caused Undefined Behavior\n    = help: see https://doc.rust-lang.org/nightly/reference/behavior-considered-undefined.html for further information\n    = note: this is on thread `unnamed-2`\n    = note: stack backtrace:\n            0: std::cell::Cell::<u64>::replace\n                at C:\\Users\\ADMIN\\.rustup\\toolchains\\nightly-2026-10-20-x86_64-pc-windows-msvc\\lib\\rustlib\\src\\rust\\library\\core\\src\\cell.rs:516:31: 516:53\n            1: std::cell::Cell::<u64>::set\n                at C:\\Users\\ADMIN\\.rustup\\toolchains\\nightly-2026-10-20-x86_64-pc-windows-msvc\\lib\\rustlib\\src\\rust\\library\\core\\src\\cell.rs:440:9: 440:26\n            2: SharedContainer::<std::cell::Cell<u64>>::set_value\n                at src\\lib.rs:28:9: 28:28\n            3: warrant_proof::proof_rustsec_anon_04::{closure#0}::{closure#0}\n                at src\\lib.rs:51:21: 51:43\nnote: the last function in that backtrace got called indirectly due to this code\n   --> src\\lib.rs:49:13\n    |\n 49 | /             s.spawn(|| {\n 50 | |                 for i in 0..10 {\n 51 | |                     container.set_value(i);\n 52 | |                 }\n 53 | |             });\n    | |______________^\n\nnote: some details are omitted, run with `MIRIFLAGS=-Zmiri-backtrace=full` for a verbose backtrace\n\nerror: aborting due to 1 previous error\n\nerror: test failed, to rerun pass `--lib`\n\nCaused by:\n  process didn't exit successfully: `C:\\Users\\ADMIN\\.rustup\\toolchains\\nightly-2026-10-20-x86_64-pc-windows-msvc\\bin\\cargo-miri.exe runner C:\\Users\\ADMIN\\AppData\\Local\\Temp\\.tmplGpoNO\\target\\miri\\x86_64-pc-windows-msvc\\debug\\build\\warrant-verification-target/5cbe5bcd3d0b813a\\out\\warrant_verification_target-5cbe5bcd3d0b813a.exe warrant_proof::proof_` (exit code: 1)\nnote: test exited abnormally; to see the full output pass --no-capture to the harness.\n",
+  "harness_code": "#[cfg(test)]\nmod warrant_proof {\n    #![forbid(unsafe_code)]\n    extern crate std;\n    use super::*;\n\n    #[test]\n    fn proof_rustsec_anon_04() {\n        let container = SharedContainer::new(Cell::new(0u64));\n        std::thread::scope(|s| {\n            s.spawn(|| {\n                for i in 0..10 {\n                    container.set_value(i);\n                }\n            });\n            s.spawn(|| {\n                for i in 0..10 {\n                    container.set_value(i + 100);\n                }\n            });\n        });\n        std::hint::black_box(container.get_value());\n    }\n}",
+  "harness_sha256": "971b31141b7c1da26501d0e318d34a58eb2a75f6e816019362b602922aabdb19",
+  "verdict": "PROVEN_PUBLIC",
+  "location_attestation": {
+    "symbol": "SharedContainer<T>",
+    "file_path": "bench/rustsec_anon/rustsec_anon_04_r2_arc_cell_sync.rs",
+    "line_span": [
+      16,
+      16
+    ],
+    "verified_in_trace": true
+  },
+  "execution_duration_ms": 3625,
+  "reproduction_command": "cargo +nightly-2026-10-20 miri test --lib warrant_proof::proof_",
+  "candidate": {
+    "id": "c-0001",
+    "crate_name": "rustsec_bench",
+    "file_path": "bench/rustsec_anon/rustsec_anon_04_r2_arc_cell_sync.rs",
+    "start_line": 16,
+    "end_line": 16,
+    "kind": "unsafe_impl",
+    "code_snippet": "unsafe impl < T > Sync for SharedContainer < T > { }",
+    "enclosing_item": "SharedContainer<T>",
+    "safety_comment": "// BUG: Missing `where T: Sync` bound! Only `T: Send` or unrestricted.",
+    "trait_name": "Sync",
+    "rule": "R2",
+    "visibility": "pub"
+  },
+  "hypothesis": {
+    "id": "hyp-rustsec_anon_04",
+    "candidate_id": "c-0001",
+    "ub_class": "data_race",
+    "explanation": "RustSec reproduction for SharedContainer unsound Sync implementation on Cell",
+    "harness_code": "#[cfg(test)]\nmod warrant_proof {\n    #![forbid(unsafe_code)]\n    extern crate std;\n    use super::*;\n\n    #[test]\n    fn proof_rustsec_anon_04() {\n        let container = SharedContainer::new(Cell::new(0u64));\n        std::thread::scope(|s| {\n            s.spawn(|| {\n                for i in 0..10 {\n                    container.set_value(i);\n                }\n            });\n            s.spawn(|| {\n                for i in 0..10 {\n                    container.set_value(i + 100);\n                }\n            });\n        });\n        std::hint::black_box(container.get_value());\n    }\n}",
+    "suggested_miri_flags": [],
+    "expected_trigger": ""
+  },
+  "finding": {
+    "id": "fnd-de84248122ed454f8fdfe8a86167c518",
+    "candidate_id": "c-0001",
+    "hypothesis_id": "hyp-rustsec_anon_04",
+    "ub_class": "data_race",
+    "status": "proven_bug",
+    "harness_code": "#[cfg(test)]\nmod warrant_proof {\n    #![forbid(unsafe_code)]\n    extern crate std;\n    use super::*;\n\n    #[test]\n    fn proof_rustsec_anon_04() {\n        let container = SharedContainer::new(Cell::new(0u64));\n        std::thread::scope(|s| {\n            s.spawn(|| {\n                for i in 0..10 {\n                    container.set_value(i);\n                }\n            });\n            s.spawn(|| {\n                for i in 0..10 {\n                    container.set_value(i + 100);\n                }\n            });\n        });\n        std::hint::black_box(container.get_value());\n    }\n}",
+    "miri_stdout": "\nrunning 1 test\ntest warrant_proof::proof_rustsec_anon_04 ... ",
+    "miri_stderr": "   Compiling warrant-verification-target v0.1.0 (C:\\Users\\ADMIN\\AppData\\Local\\Temp\\.tmplGpoNO)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.22s\n     Running unittests src\\lib.rs (target\\miri\\x86_64-pc-windows-msvc\\debug\\build\\warrant-verification-target/5cbe5bcd3d0b813a\\out\\warrant_verification_target-5cbe5bcd3d0b813a.exe)\nerror: Undefined Behavior: Data race detected between (1) non-atomic write on thread `unnamed-3` and (2) retag read of type `u64` on thread `unnamed-2` at alloc48341+0x10\n   --> C:\\Users\\ADMIN\\.rustup\\toolchains\\nightly-2026-10-20-x86_64-pc-windows-msvc\\lib\\rustlib\\src\\rust\\library\\core\\src\\cell.rs:516:31\n    |\n516 |         mem::replace(unsafe { &mut *self.value.get() }, val)\n    |                               ^^^^^^^^^^^^^^^^^^^^^^ (2) just happened here\n    |\nhelp: and (1) occurred earlier here\n   --> src\\lib.rs:28:9\n    |\n 28 |         self.inner.set(val);\n    |         ^^^^^^^^^^^^^^^^^^^\n    = help: retags occur on all (re)borrows and as well as when references are copied or moved\n    = help: retags permit optimizations that insert speculative reads or writes\n    = help: therefore from the perspective of data races, a retag has the same implications as a read or write\n    = help: this indicates a bug in the program: it performed an invalid operation, and caused Undefined Behavior\n    = help: see https://doc.rust-lang.org/nightly/reference/behavior-considered-undefined.html for further information\n    = note: this is on thread `unnamed-2`\n    = note: stack backtrace:\n            0: std::cell::Cell::<u64>::replace\n                at C:\\Users\\ADMIN\\.rustup\\toolchains\\nightly-2026-10-20-x86_64-pc-windows-msvc\\lib\\rustlib\\src\\rust\\library\\core\\src\\cell.rs:516:31: 516:53\n            1: std::cell::Cell::<u64>::set\n                at C:\\Users\\ADMIN\\.rustup\\toolchains\\nightly-2026-10-20-x86_64-pc-windows-msvc\\lib\\rustlib\\src\\rust\\library\\core\\src\\cell.rs:440:9: 440:26\n            2: SharedContainer::<std::cell::Cell<u64>>::set_value\n                at src\\lib.rs:28:9: 28:28\n            3: warrant_proof::proof_rustsec_anon_04::{closure#0}::{closure#0}\n                at src\\lib.rs:51:21: 51:43\nnote: the last function in that backtrace got called indirectly due to this code\n   --> src\\lib.rs:49:13\n    |\n 49 | /             s.spawn(|| {\n 50 | |                 for i in 0..10 {\n 51 | |                     container.set_value(i);\n 52 | |                 }\n 53 | |             });\n    | |______________^\n\nnote: some details are omitted, run with `MIRIFLAGS=-Zmiri-backtrace=full` for a verbose backtrace\n\nerror: aborting due to 1 previous error\n\nerror: test failed, to rerun pass `--lib`\n\nCaused by:\n  process didn't exit successfully: `C:\\Users\\ADMIN\\.rustup\\toolchains\\nightly-2026-10-20-x86_64-pc-windows-msvc\\bin\\cargo-miri.exe runner C:\\Users\\ADMIN\\AppData\\Local\\Temp\\.tmplGpoNO\\target\\miri\\x86_64-pc-windows-msvc\\debug\\build\\warrant-verification-target/5cbe5bcd3d0b813a\\out\\warrant_verification_target-5cbe5bcd3d0b813a.exe warrant_proof::proof_` (exit code: 1)\nnote: test exited abnormally; to see the full output pass --no-capture to the harness.\n",
+    "exit_code": 1,
+    "evidence_hash": "7a804298ac6f9b87e646dc55767a649bcb654f67146051f867a5180c4320fe9b",
+    "timestamp_rfc3339": "2026-10-28T00:00:00Z",
+    "patch_status": null,
+    "patch_code": null,
+    "patch_diff": null
+  },
+  "patch_status": null,
+  "patch_code": null,
+  "patch_diff": null
+}

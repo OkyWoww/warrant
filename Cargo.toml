@@ -1,0 +1,58 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/extract",
+    "crates/llm",
+    "crates/verify",
+    "crates/cli",
+    "tools/mutator",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+authors = ["WARRANT Security Team <security@warrant.internal>"]
+license = "MIT OR Apache-2.0"
+
+
+[workspace.dependencies]
+# Internal workspace crates
+warrant-extract = { path = "crates/extract" }
+warrant-llm = { path = "crates/llm" }
+warrant-verify = { path = "crates/verify" }
+
+# Serialization and data contracts
+serde = { version = "1.0.217", features = ["derive"] }
+serde_json = { version = "1.0.138" }
+
+# AST Parsing and Code Generation
+syn = { version = "2.0.98", features = ["full", "extra-traits", "visit", "parsing", "printing"] }
+quote = "1.0.38"
+proc-macro2 = { version = "1.0.93", features = ["span-locations"] }
+
+# Asynchronous runtime and abstractions
+tokio = { version = "1.43.0", features = ["full"] }
+async-trait = "0.1.86"
+
+# Command line interface
+clap = { version = "4.5.30", features = ["derive", "env"] }
+
+# Observability and Error Handling
+tracing = "0.1.41"
+tracing-subscriber = { version = "0.3.19", features = ["env-filter", "json"] }
+thiserror = "2.0.11"
+anyhow = "1.0.95"
+
+# System and Sandboxing utilities
+tempfile = "3.17.1"
+regex = "1.11.1"
+uuid = { version = "1.13.1", features = ["v4", "serde"] }
+walkdir = "2.5.0"
+sha2 = "0.10.8"
+hex = "0.4.3"
+
+# HTTP Networking & Environment Secrets
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls"] }
+dotenvy = "0.15.7"
+
+

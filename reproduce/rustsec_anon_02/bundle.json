@@ -1,0 +1,70 @@
+{
+  "bundle_id": "evb-12a32e6860484419b19688be96eb8789",
+  "candidate_id": "c-0001",
+  "target_commit": "0000000000000000000000000000000000000000",
+  "toolchain": "nightly-2026-10-20",
+  "miri_flags": [
+    "-Zmiri-tree-borrows",
+    "-Zmiri-strict-provenance",
+    "-Zmiri-preemption-rate=0"
+  ],
+  "commands": [
+    "cargo +nightly-2026-10-20 miri test --lib warrant_proof::proof_"
+  ],
+  "stdout": "\nrunning 1 test\ntest warrant_proof::proof_rustsec_anon_02 ... ",
+  "stderr": "   Compiling warrant-verification-target v0.1.0 (C:\\Users\\ADMIN\\AppData\\Local\\Temp\\.tmpVQOBlz)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.23s\n     Running unittests src\\lib.rs (target\\miri\\x86_64-pc-windows-msvc\\debug\\build\\warrant-verification-target/5cbe5bcd3d0b813a\\out\\warrant_verification_target-5cbe5bcd3d0b813a.exe)\nerror: Undefined Behavior: in-bounds pointer arithmetic failed: attempting to offset pointer by 100 bytes, but got alloc48333 which is only 4 bytes from the end of the allocation\n  --> src\\lib.rs:25:19\n   |\n25 |         unsafe { *self.buf.as_ptr().add(self.pos) }\n   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Undefined Behavior occurred here\n   |\n   = help: this indicates a bug in the program: it performed an invalid operation, and caused Undefined Behavior\n   = help: see https://doc.rust-lang.org/nightly/reference/behavior-considered-undefined.html for further information\nhelp: alloc48333 was allocated here:\n  --> src\\lib.rs:40:42\n   |\n40 |         let mut cursor = ByteCursor::new(vec![1, 2, 3, 4]);\n   |                                          ^^^^^^^^^^^^^^^^\n   = note: this is on thread `warrant_proof::proof_rustsec_anon_02`\n   = note: stack backtrace:\n           0: ByteCursor::peek_current\n               at src\\lib.rs:25:19: 25:50\n           1: warrant_proof::proof_rustsec_anon_02\n               at src\\lib.rs:42:19: 42:40\n           2: warrant_proof::proof_rustsec_anon_02::{closure#0}\n               at src\\lib.rs:39:31: 39:31\n\nnote: some details are omitted, run with `MIRIFLAGS=-Zmiri-backtrace=full` for a verbose backtrace\n\nerror: aborting due to 1 previous error\n\nerror: test failed, to rerun pass `--lib`\n\nCaused by:\n  process didn't exit successfully: `C:\\Users\\ADMIN\\.rustup\\toolchains\\nightly-2026-10-20-x86_64-pc-windows-msvc\\bin\\cargo-miri.exe runner C:\\Users\\ADMIN\\AppData\\Local\\Temp\\.tmpVQOBlz\\target\\miri\\x86_64-pc-windows-msvc\\debug\\build\\warrant-verification-target/5cbe5bcd3d0b813a\\out\\warrant_verification_target-5cbe5bcd3d0b813a.exe warrant_proof::proof_` (exit code: 1)\nnote: test exited abnormally; to see the full output pass --no-capture to the harness.\n",
+  "harness_code": "#[cfg(test)]\nmod warrant_proof {\n    #![forbid(unsafe_code)]\n    extern crate std;\n    use super::*;\n\n    #[test]\n    fn proof_rustsec_anon_02() {\n        let mut cursor = ByteCursor::new(vec![1, 2, 3, 4]);\n        cursor.advance(100);\n        let val = cursor.peek_current();\n        std::hint::black_box(val);\n    }\n}",
+  "harness_sha256": "25ffb90af63e17fb972dc53323543ad8dbf6810673b9f8424ce2da46f4493a1d",
+  "verdict": "PROVEN_PUBLIC",
+  "location_attestation": {
+    "symbol": "ByteCursor::peek_current",
+    "file_path": "bench/rustsec_anon/rustsec_anon_02_r1_bytes_advance.rs",
+    "line_span": [
+      25,
+      25
+    ],
+    "verified_in_trace": true
+  },
+  "execution_duration_ms": 3572,
+  "reproduction_command": "cargo +nightly-2026-10-20 miri test --lib warrant_proof::proof_",
+  "candidate": {
+    "id": "c-0001",
+    "crate_name": "rustsec_bench",
+    "file_path": "bench/rustsec_anon/rustsec_anon_02_r1_bytes_advance.rs",
+    "start_line": 25,
+    "end_line": 25,
+    "kind": "unsafe_block",
+    "code_snippet": "unsafe { * self . buf . as_ptr () . add (self . pos) }",
+    "enclosing_item": "ByteCursor::peek_current",
+    "rule": "R1",
+    "visibility": "pub"
+  },
+  "hypothesis": {
+    "id": "hyp-rustsec_anon_02",
+    "candidate_id": "c-0001",
+    "ub_class": "ub_oob",
+    "explanation": "RustSec reproduction for ByteCursor unchecked position advance overread",
+    "harness_code": "#[cfg(test)]\nmod warrant_proof {\n    #![forbid(unsafe_code)]\n    extern crate std;\n    use super::*;\n\n    #[test]\n    fn proof_rustsec_anon_02() {\n        let mut cursor = ByteCursor::new(vec![1, 2, 3, 4]);\n        cursor.advance(100);\n        let val = cursor.peek_current();\n        std::hint::black_box(val);\n    }\n}",
+    "suggested_miri_flags": [],
+    "expected_trigger": ""
+  },
+  "finding": {
+    "id": "fnd-1e420d99dc284d13903109b5d92d4588",
+    "candidate_id": "c-0001",
+    "hypothesis_id": "hyp-rustsec_anon_02",
+    "ub_class": "ub_oob",
+    "status": "proven_bug",
+    "harness_code": "#[cfg(test)]\nmod warrant_proof {\n    #![forbid(unsafe_code)]\n    extern crate std;\n    use super::*;\n\n    #[test]\n    fn proof_rustsec_anon_02() {\n        let mut cursor = ByteCursor::new(vec![1, 2, 3, 4]);\n        cursor.advance(100);\n        let val = cursor.peek_current();\n        std::hint::black_box(val);\n    }\n}",
+    "miri_stdout": "\nrunning 1 test\ntest warrant_proof::proof_rustsec_anon_02 ... ",
+    "miri_stderr": "   Compiling warrant-verification-target v0.1.0 (C:\\Users\\ADMIN\\AppData\\Local\\Temp\\.tmpVQOBlz)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.23s\n     Running unittests src\\lib.rs (target\\miri\\x86_64-pc-windows-msvc\\debug\\build\\warrant-verification-target/5cbe5bcd3d0b813a\\out\\warrant_verification_target-5cbe5bcd3d0b813a.exe)\nerror: Undefined Behavior: in-bounds pointer arithmetic failed: attempting to offset pointer by 100 bytes, but got alloc48333 which is only 4 bytes from the end of the allocation\n  --> src\\lib.rs:25:19\n   |\n25 |         unsafe { *self.buf.as_ptr().add(self.pos) }\n   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Undefined Behavior occurred here\n   |\n   = help: this indicates a bug in the program: it performed an invalid operation, and caused Undefined Behavior\n   = help: see https://doc.rust-lang.org/nightly/reference/behavior-considered-undefined.html for further information\nhelp: alloc48333 was allocated here:\n  --> src\\lib.rs:40:42\n   |\n40 |         let mut cursor = ByteCursor::new(vec![1, 2, 3, 4]);\n   |                                          ^^^^^^^^^^^^^^^^\n   = note: this is on thread `warrant_proof::proof_rustsec_anon_02`\n   = note: stack backtrace:\n           0: ByteCursor::peek_current\n               at src\\lib.rs:25:19: 25:50\n           1: warrant_proof::proof_rustsec_anon_02\n               at src\\lib.rs:42:19: 42:40\n           2: warrant_proof::proof_rustsec_anon_02::{closure#0}\n               at src\\lib.rs:39:31: 39:31\n\nnote: some details are omitted, run with `MIRIFLAGS=-Zmiri-backtrace=full` for a verbose backtrace\n\nerror: aborting due to 1 previous error\n\nerror: test failed, to rerun pass `--lib`\n\nCaused by:\n  process didn't exit successfully: `C:\\Users\\ADMIN\\.rustup\\toolchains\\nightly-2026-10-20-x86_64-pc-windows-msvc\\bin\\cargo-miri.exe runner C:\\Users\\ADMIN\\AppData\\Local\\Temp\\.tmpVQOBlz\\target\\miri\\x86_64-pc-windows-msvc\\debug\\build\\warrant-verification-target/5cbe5bcd3d0b813a\\out\\warrant_verification_target-5cbe5bcd3d0b813a.exe warrant_proof::proof_` (exit code: 1)\nnote: test exited abnormally; to see the full output pass --no-capture to the harness.\n",
+    "exit_code": 1,
+    "evidence_hash": "aedda5090a8d832e54091bf7fe0d6b230781ef5f4c158b74eda67bfca14ad15e",
+    "timestamp_rfc3339": "2026-10-28T00:00:00Z",
+    "patch_status": null,
+    "patch_code": null,
+    "patch_diff": null
+  },
+  "patch_status": null,
+  "patch_code": null,
+  "patch_diff": null
+}

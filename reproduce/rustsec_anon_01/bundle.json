@@ -1,0 +1,71 @@
+{
+  "bundle_id": "evb-89972f8abae64f179ac61d699b042fe3",
+  "candidate_id": "c-0001",
+  "target_commit": "0000000000000000000000000000000000000000",
+  "toolchain": "nightly-2026-10-20",
+  "miri_flags": [
+    "-Zmiri-tree-borrows",
+    "-Zmiri-strict-provenance",
+    "-Zmiri-preemption-rate=0"
+  ],
+  "commands": [
+    "cargo +nightly-2026-10-20 miri test --lib warrant_proof::proof_"
+  ],
+  "stdout": "\nrunning 1 test\ntest warrant_proof::proof_rustsec_anon_01 ... ",
+  "stderr": "   Compiling warrant-verification-target v0.1.0 (C:\\Users\\ADMIN\\AppData\\Local\\Temp\\.tmpB7Ow9p)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.42s\n     Running unittests src\\lib.rs (target\\miri\\x86_64-pc-windows-msvc\\debug\\build\\warrant-verification-target/5cbe5bcd3d0b813a\\out\\warrant_verification_target-5cbe5bcd3d0b813a.exe)\nerror: Undefined Behavior: in-bounds pointer arithmetic failed: attempting to offset pointer by 36 bytes, but got alloc48323 which is only 24 bytes from the end of the allocation\n  --> src\\lib.rs:36:49\n   |\n36 |                 std::ptr::copy(base.add(index), base.add(index + insert_count), shift_count);\n   |                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Undefined Behavior occurred here\n   |\n   = help: this indicates a bug in the program: it performed an invalid operation, and caused Undefined Behavior\n   = help: see https://doc.rust-lang.org/nightly/reference/behavior-considered-undefined.html for further information\nhelp: alloc48323 was allocated here:\n  --> src\\lib.rs:69:13\n   |\n69 |         let mut buf = CompactBuffer::new();\n   |             ^^^^^^^\n   = note: this is on thread `warrant_proof::proof_rustsec_anon_01`\n   = note: stack backtrace:\n           0: CompactBuffer::<u32>::insert_slice\n               at src\\lib.rs:36:49: 36:79\n           1: warrant_proof::proof_rustsec_anon_01\n               at src\\lib.rs:74:9: 74:71\n           2: warrant_proof::proof_rustsec_anon_01::{closure#0}\n               at src\\lib.rs:68:31: 68:31\n\nnote: some details are omitted, run with `MIRIFLAGS=-Zmiri-backtrace=full` for a verbose backtrace\n\nerror: aborting due to 1 previous error\n\nerror: test failed, to rerun pass `--lib`\n\nCaused by:\n  process didn't exit successfully: `C:\\Users\\ADMIN\\.rustup\\toolchains\\nightly-2026-10-20-x86_64-pc-windows-msvc\\bin\\cargo-miri.exe runner C:\\Users\\ADMIN\\AppData\\Local\\Temp\\.tmpB7Ow9p\\target\\miri\\x86_64-pc-windows-msvc\\debug\\build\\warrant-verification-target/5cbe5bcd3d0b813a\\out\\warrant_verification_target-5cbe5bcd3d0b813a.exe warrant_proof::proof_` (exit code: 1)\nnote: test exited abnormally; to see the full output pass --no-capture to the harness.\n",
+  "harness_code": "#[cfg(test)]\nmod warrant_proof {\n    #![forbid(unsafe_code)]\n    extern crate std;\n    use super::*;\n\n    #[test]\n    fn proof_rustsec_anon_01() {\n        let mut buf = CompactBuffer::new();\n        buf.push(10u32);\n        buf.push(20);\n        buf.push(30);\n        // Inserting 8 items exceeds capacity and entire struct allocation (total 11 > 4), triggering OOB\n        buf.insert_slice(1, &[100, 200, 300, 400, 500, 600, 700, 800]);\n        std::hint::black_box(buf.get(0));\n    }\n}",
+  "harness_sha256": "31d168b9119cb87bd31abd9a5c9b4c15e060bda1957b69113a0968494dbb4bfd",
+  "verdict": "PROVEN_PUBLIC",
+  "location_attestation": {
+    "symbol": "CompactBuffer<T>::insert_slice",
+    "file_path": "bench/rustsec_anon/rustsec_anon_01_r1_smallvec_insert.rs",
+    "line_span": [
+      34,
+      38
+    ],
+    "verified_in_trace": true
+  },
+  "execution_duration_ms": 4385,
+  "reproduction_command": "cargo +nightly-2026-10-20 miri test --lib warrant_proof::proof_",
+  "candidate": {
+    "id": "c-0001",
+    "crate_name": "rustsec_bench",
+    "file_path": "bench/rustsec_anon/rustsec_anon_01_r1_smallvec_insert.rs",
+    "start_line": 34,
+    "end_line": 38,
+    "kind": "unsafe_block",
+    "code_snippet": "unsafe { let base = self . data . as_mut_ptr () ; std :: ptr :: copy (base . add (index) , base . add (index + insert_count) , shift_count) ; std :: ptr :: copy_nonoverlapping (items . as_ptr () , base . add (index) , insert_count) ; }",
+    "enclosing_item": "CompactBuffer<T>::insert_slice",
+    "safety_comment": "// BUG: Elements are shifted past the 4-element inline buffer allocation!",
+    "rule": "R1",
+    "visibility": "pub"
+  },
+  "hypothesis": {
+    "id": "hyp-rustsec_anon_01",
+    "candidate_id": "c-0001",
+    "ub_class": "ub_oob",
+    "explanation": "RustSec reproduction for CompactBuffer element shifting out of bounds",
+    "harness_code": "#[cfg(test)]\nmod warrant_proof {\n    #![forbid(unsafe_code)]\n    extern crate std;\n    use super::*;\n\n    #[test]\n    fn proof_rustsec_anon_01() {\n        let mut buf = CompactBuffer::new();\n        buf.push(10u32);\n        buf.push(20);\n        buf.push(30);\n        // Inserting 8 items exceeds capacity and entire struct allocation (total 11 > 4), triggering OOB\n        buf.insert_slice(1, &[100, 200, 300, 400, 500, 600, 700, 800]);\n        std::hint::black_box(buf.get(0));\n    }\n}",
+    "suggested_miri_flags": [],
+    "expected_trigger": ""
+  },
+  "finding": {
+    "id": "fnd-08bc3b0d009044029e3fbd6f0d89032a",
+    "candidate_id": "c-0001",
+    "hypothesis_id": "hyp-rustsec_anon_01",
+    "ub_class": "ub_oob",
+    "status": "proven_bug",
+    "harness_code": "#[cfg(test)]\nmod warrant_proof {\n    #![forbid(unsafe_code)]\n    extern crate std;\n    use super::*;\n\n    #[test]\n    fn proof_rustsec_anon_01() {\n        let mut buf = CompactBuffer::new();\n        buf.push(10u32);\n        buf.push(20);\n        buf.push(30);\n        // Inserting 8 items exceeds capacity and entire struct allocation (total 11 > 4), triggering OOB\n        buf.insert_slice(1, &[100, 200, 300, 400, 500, 600, 700, 800]);\n        std::hint::black_box(buf.get(0));\n    }\n}",
+    "miri_stdout": "\nrunning 1 test\ntest warrant_proof::proof_rustsec_anon_01 ... ",
+    "miri_stderr": "   Compiling warrant-verification-target v0.1.0 (C:\\Users\\ADMIN\\AppData\\Local\\Temp\\.tmpB7Ow9p)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.42s\n     Running unittests src\\lib.rs (target\\miri\\x86_64-pc-windows-msvc\\debug\\build\\warrant-verification-target/5cbe5bcd3d0b813a\\out\\warrant_verification_target-5cbe5bcd3d0b813a.exe)\nerror: Undefined Behavior: in-bounds pointer arithmetic failed: attempting to offset pointer by 36 bytes, but got alloc48323 which is only 24 bytes from the end of the allocation\n  --> src\\lib.rs:36:49\n   |\n36 |                 std::ptr::copy(base.add(index), base.add(index + insert_count), shift_count);\n   |                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Undefined Behavior occurred here\n   |\n   = help: this indicates a bug in the program: it performed an invalid operation, and caused Undefined Behavior\n   = help: see https://doc.rust-lang.org/nightly/reference/behavior-considered-undefined.html for further information\nhelp: alloc48323 was allocated here:\n  --> src\\lib.rs:69:13\n   |\n69 |         let mut buf = CompactBuffer::new();\n   |             ^^^^^^^\n   = note: this is on thread `warrant_proof::proof_rustsec_anon_01`\n   = note: stack backtrace:\n           0: CompactBuffer::<u32>::insert_slice\n               at src\\lib.rs:36:49: 36:79\n           1: warrant_proof::proof_rustsec_anon_01\n               at src\\lib.rs:74:9: 74:71\n           2: warrant_proof::proof_rustsec_anon_01::{closure#0}\n               at src\\lib.rs:68:31: 68:31\n\nnote: some details are omitted, run with `MIRIFLAGS=-Zmiri-backtrace=full` for a verbose backtrace\n\nerror: aborting due to 1 previous error\n\nerror: test failed, to rerun pass `--lib`\n\nCaused by:\n  process didn't exit successfully: `C:\\Users\\ADMIN\\.rustup\\toolchains\\nightly-2026-10-20-x86_64-pc-windows-msvc\\bin\\cargo-miri.exe runner C:\\Users\\ADMIN\\AppData\\Local\\Temp\\.tmpB7Ow9p\\target\\miri\\x86_64-pc-windows-msvc\\debug\\build\\warrant-verification-target/5cbe5bcd3d0b813a\\out\\warrant_verification_target-5cbe5bcd3d0b813a.exe warrant_proof::proof_` (exit code: 1)\nnote: test exited abnormally; to see the full output pass --no-capture to the harness.\n",
+    "exit_code": 1,
+    "evidence_hash": "234514e444ee6af000003bd2df8b6016912e9671be0e1fa208b8dd1adcab4f2b",
+    "timestamp_rfc3339": "2026-10-28T00:00:00Z",
+    "patch_status": null,
+    "patch_code": null,
+    "patch_diff": null
+  },
+  "patch_status": null,
+  "patch_code": null,
+  "patch_diff": null
+}

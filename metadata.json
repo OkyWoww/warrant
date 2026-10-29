@@ -1,0 +1,8 @@
+{
+  "name": "WARRANT: Rust Unsafe Soundness Auditor",
+  "description": "Proof-first automated soundness auditor for Rust unsafe code with AST extraction, LLM hypothesis generation, Miri sandbox verification, and evidence bundling.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

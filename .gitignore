@@ -1,0 +1,33 @@
+# Rust & Cargo build artifacts
+/target/
+crates/**/target/
+tools/**/target/
+Cargo.lock
+
+# Secret and environment configurations
+.env
+.env.*
+!.env.example
+
+# Benchmark proprietary / confidential test cases
+bench/own/
+
+# Miri and sandbox artifacts
+/sandbox/.miri/
+/sandbox/tmp/
+*.bundle.json
+evidence/
+
+# Node.js and frontend dev artifacts
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# System and editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo

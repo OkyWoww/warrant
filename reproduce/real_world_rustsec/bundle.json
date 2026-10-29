@@ -1,0 +1,71 @@
+{
+  "bundle_id": "evb-9cc49c5a0e8c4ebca078e86f3299a77d",
+  "candidate_id": "c-0001",
+  "target_commit": "0000000000000000000000000000000000000000",
+  "toolchain": "nightly-2026-10-20",
+  "miri_flags": [
+    "-Zmiri-tree-borrows",
+    "-Zmiri-strict-provenance",
+    "-Zmiri-preemption-rate=0"
+  ],
+  "commands": [
+    "cargo +nightly-2026-10-20 miri test --lib warrant_proof::proof_"
+  ],
+  "stdout": "\nrunning 1 test\ntest warrant_proof::proof_smallvec_insert_many_oob ... ",
+  "stderr": "   Compiling warrant-verification-target v0.1.0 (C:\\Users\\ADMIN\\AppData\\Local\\Temp\\.tmpiJJ2NJ)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.21s\n     Running unittests src\\lib.rs (target\\miri\\x86_64-pc-windows-msvc\\debug\\build\\warrant-verification-target/5cbe5bcd3d0b813a\\out\\warrant_verification_target-5cbe5bcd3d0b813a.exe)\nerror: Undefined Behavior: in-bounds pointer arithmetic failed: attempting to offset pointer by 56 bytes, but got alloc48734 which is only 24 bytes from the end of the allocation\n  --> src\\lib.rs:50:44\n   |\n50 |             std::ptr::copy(ptr.add(index), ptr.add(index + num_items), self.len - index);\n   |                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^ Undefined Behavior occurred here\n   |\n   = help: this indicates a bug in the program: it performed an invalid operation, and caused Undefined Behavior\n   = help: see https://doc.rust-lang.org/nightly/reference/behavior-considered-undefined.html for further information\nhelp: alloc48734 was allocated here:\n  --> src\\lib.rs:82:13\n   |\n82 |         let mut sv: SmallVec<u64> = SmallVec::new();\n   |             ^^^^^^\n   = note: this is on thread `warrant_proof::proof_smallvec_insert_many_oob`\n   = note: stack backtrace:\n           0: SmallVec::<u64>::insert_many\n               at src\\lib.rs:50:44: 50:70\n           1: warrant_proof::proof_smallvec_insert_many_oob\n               at src\\lib.rs:86:9: 86:59\n           2: warrant_proof::proof_smallvec_insert_many_oob::{closure#0}\n               at src\\lib.rs:81:40: 81:40\n\nnote: some details are omitted, run with `MIRIFLAGS=-Zmiri-backtrace=full` for a verbose backtrace\n\nerror: aborting due to 1 previous error\n\nerror: test failed, to rerun pass `--lib`\n\nCaused by:\n  process didn't exit successfully: `C:\\Users\\ADMIN\\.rustup\\toolchains\\nightly-2026-10-20-x86_64-pc-windows-msvc\\bin\\cargo-miri.exe runner C:\\Users\\ADMIN\\AppData\\Local\\Temp\\.tmpiJJ2NJ\\target\\miri\\x86_64-pc-windows-msvc\\debug\\build\\warrant-verification-target/5cbe5bcd3d0b813a\\out\\warrant_verification_target-5cbe5bcd3d0b813a.exe warrant_proof::proof_` (exit code: 1)\nnote: test exited abnormally; to see the full output pass --no-capture to the harness.\n",
+  "harness_code": "#[cfg(test)]\nmod warrant_proof {\n    #![forbid(unsafe_code)]\n    extern crate std;\n    use super::*;\n\n    #[test]\n    fn proof_smallvec_insert_many_oob() {\n        let mut sv: SmallVec<u64> = SmallVec::new();\n        sv.push(111);\n        sv.push(222);\n        // Inserting 6 elements exceeds capacity and entire struct allocation (total 8 > 2), writing OOB\n        sv.insert_many(1, &[333, 444, 555, 666, 777, 888]);\n        std::hint::black_box(sv.get(0));\n    }\n}",
+  "harness_sha256": "8e6548906df7ffb75ab0ee76ba5f66129e7f6248b9f8f9887f39ede7c71b58aa",
+  "verdict": "PROVEN_PUBLIC",
+  "location_attestation": {
+    "symbol": "SmallVec<T>::insert_many",
+    "file_path": "bench/real_world_demo/smallvec_r1_demo.rs",
+    "line_span": [
+      48,
+      52
+    ],
+    "verified_in_trace": true
+  },
+  "execution_duration_ms": 3492,
+  "reproduction_command": "cargo +nightly-2026-10-20 miri test --lib warrant_proof::proof_",
+  "candidate": {
+    "id": "c-0001",
+    "crate_name": "rustsec_bench",
+    "file_path": "bench/real_world_demo/smallvec_r1_demo.rs",
+    "start_line": 48,
+    "end_line": 52,
+    "kind": "unsafe_block",
+    "code_snippet": "unsafe { let ptr = self . data . as_mut_ptr () ; std :: ptr :: copy (ptr . add (index) , ptr . add (index + num_items) , self . len - index) ; std :: ptr :: copy_nonoverlapping (elements . as_ptr () , ptr . add (index) , num_items) ; }",
+    "enclosing_item": "SmallVec<T>::insert_many",
+    "safety_comment": "// BUG: `ptr::copy` shifts elements past the 2-element inline allocation!",
+    "rule": "R1",
+    "visibility": "pub"
+  },
+  "hypothesis": {
+    "id": "hyp-real_world_demo",
+    "candidate_id": "c-0001",
+    "ub_class": "ub_oob",
+    "explanation": "RustSec reproduction for smallvec (>=0.6.3, <0.6.14) SmallVec::insert_many capacity overflow",
+    "harness_code": "#[cfg(test)]\nmod warrant_proof {\n    #![forbid(unsafe_code)]\n    extern crate std;\n    use super::*;\n\n    #[test]\n    fn proof_smallvec_insert_many_oob() {\n        let mut sv: SmallVec<u64> = SmallVec::new();\n        sv.push(111);\n        sv.push(222);\n        // Inserting 6 elements exceeds capacity and entire struct allocation (total 8 > 2), writing OOB\n        sv.insert_many(1, &[333, 444, 555, 666, 777, 888]);\n        std::hint::black_box(sv.get(0));\n    }\n}",
+    "suggested_miri_flags": [],
+    "expected_trigger": ""
+  },
+  "finding": {
+    "id": "fnd-fbefb61268924061b2c89a02f85bc5f5",
+    "candidate_id": "c-0001",
+    "hypothesis_id": "hyp-real_world_demo",
+    "ub_class": "ub_oob",
+    "status": "proven_bug",
+    "harness_code": "#[cfg(test)]\nmod warrant_proof {\n    #![forbid(unsafe_code)]\n    extern crate std;\n    use super::*;\n\n    #[test]\n    fn proof_smallvec_insert_many_oob() {\n        let mut sv: SmallVec<u64> = SmallVec::new();\n        sv.push(111);\n        sv.push(222);\n        // Inserting 6 elements exceeds capacity and entire struct allocation (total 8 > 2), writing OOB\n        sv.insert_many(1, &[333, 444, 555, 666, 777, 888]);\n        std::hint::black_box(sv.get(0));\n    }\n}",
+    "miri_stdout": "\nrunning 1 test\ntest warrant_proof::proof_smallvec_insert_many_oob ... ",
+    "miri_stderr": "   Compiling warrant-verification-target v0.1.0 (C:\\Users\\ADMIN\\AppData\\Local\\Temp\\.tmpiJJ2NJ)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.21s\n     Running unittests src\\lib.rs (target\\miri\\x86_64-pc-windows-msvc\\debug\\build\\warrant-verification-target/5cbe5bcd3d0b813a\\out\\warrant_verification_target-5cbe5bcd3d0b813a.exe)\nerror: Undefined Behavior: in-bounds pointer arithmetic failed: attempting to offset pointer by 56 bytes, but got alloc48734 which is only 24 bytes from the end of the allocation\n  --> src\\lib.rs:50:44\n   |\n50 |             std::ptr::copy(ptr.add(index), ptr.add(index + num_items), self.len - index);\n   |                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^ Undefined Behavior occurred here\n   |\n   = help: this indicates a bug in the program: it performed an invalid operation, and caused Undefined Behavior\n   = help: see https://doc.rust-lang.org/nightly/reference/behavior-considered-undefined.html for further information\nhelp: alloc48734 was allocated here:\n  --> src\\lib.rs:82:13\n   |\n82 |         let mut sv: SmallVec<u64> = SmallVec::new();\n   |             ^^^^^^\n   = note: this is on thread `warrant_proof::proof_smallvec_insert_many_oob`\n   = note: stack backtrace:\n           0: SmallVec::<u64>::insert_many\n               at src\\lib.rs:50:44: 50:70\n           1: warrant_proof::proof_smallvec_insert_many_oob\n               at src\\lib.rs:86:9: 86:59\n           2: warrant_proof::proof_smallvec_insert_many_oob::{closure#0}\n               at src\\lib.rs:81:40: 81:40\n\nnote: some details are omitted, run with `MIRIFLAGS=-Zmiri-backtrace=full` for a verbose backtrace\n\nerror: aborting due to 1 previous error\n\nerror: test failed, to rerun pass `--lib`\n\nCaused by:\n  process didn't exit successfully: `C:\\Users\\ADMIN\\.rustup\\toolchains\\nightly-2026-10-20-x86_64-pc-windows-msvc\\bin\\cargo-miri.exe runner C:\\Users\\ADMIN\\AppData\\Local\\Temp\\.tmpiJJ2NJ\\target\\miri\\x86_64-pc-windows-msvc\\debug\\build\\warrant-verification-target/5cbe5bcd3d0b813a\\out\\warrant_verification_target-5cbe5bcd3d0b813a.exe warrant_proof::proof_` (exit code: 1)\nnote: test exited abnormally; to see the full output pass --no-capture to the harness.\n",
+    "exit_code": 1,
+    "evidence_hash": "dc44b29569b0f0cc74c3ba9f5bb334920c33627d05dd2f8fa2493fb3c4af8a26",
+    "timestamp_rfc3339": "2026-10-28T00:00:00Z",
+    "patch_status": null,
+    "patch_code": null,
+    "patch_diff": null
+  },
+  "patch_status": null,
+  "patch_code": null,
+  "patch_diff": null
+}

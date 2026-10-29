@@ -1,0 +1,72 @@
+{
+  "bundle_id": "evb-37f9dee98b1349d08e5e1a0e4dedf7fa",
+  "candidate_id": "c-0001",
+  "target_commit": "0000000000000000000000000000000000000000",
+  "toolchain": "nightly-2026-10-20",
+  "miri_flags": [
+    "-Zmiri-tree-borrows",
+    "-Zmiri-strict-provenance",
+    "-Zmiri-preemption-rate=0"
+  ],
+  "commands": [
+    "cargo +nightly-2026-10-20 miri test --lib warrant_proof::proof_"
+  ],
+  "stdout": "\nrunning 1 test\ntest warrant_proof::proof_rustsec_anon_05 ... ",
+  "stderr": "   Compiling warrant-verification-target v0.1.0 (C:\\Users\\ADMIN\\AppData\\Local\\Temp\\.tmpFQbt7A)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.21s\n     Running unittests src\\lib.rs (target\\miri\\x86_64-pc-windows-msvc\\debug\\build\\warrant-verification-target/5cbe5bcd3d0b813a\\out\\warrant_verification_target-5cbe5bcd3d0b813a.exe)\nerror: Undefined Behavior: Data race detected between (1) non-atomic read on thread `unnamed-3` and (2) non-atomic write on thread `unnamed-2` at alloc48321\n  --> src\\lib.rs:26:13\n   |\n26 |             *self.slot.get() = val;\n   |             ^^^^^^^^^^^^^^^^^^^^^^ (2) just happened here\n   |\nhelp: and (1) occurred earlier here\n  --> src\\lib.rs:32:13\n   |\n32 |             *self.slot.get()\n   |             ^^^^^^^^^^^^^^^^\n   = help: this indicates a bug in the program: it performed an invalid operation, and caused Undefined Behavior\n   = help: see https://doc.rust-lang.org/nightly/reference/behavior-considered-undefined.html for further information\n   = note: this is on thread `unnamed-2`\n   = note: stack backtrace:\n           0: UnsyncQueue::push\n               at src\\lib.rs:26:13: 26:35\n           1: warrant_proof::proof_rustsec_anon_05::{closure#0}::{closure#0}\n               at src\\lib.rs:52:21: 52:30\nnote: the last function in that backtrace got called indirectly due to this code\n  --> src\\lib.rs:50:13\n   |\n50 | /             s.spawn(|| {\n51 | |                 for i in 0..10 {\n52 | |                     q.push(i);\n53 | |                 }\n54 | |             });\n   | |______________^\n\nnote: some details are omitted, run with `MIRIFLAGS=-Zmiri-backtrace=full` for a verbose backtrace\n\nerror: aborting due to 1 previous error\n\nerror: test failed, to rerun pass `--lib`\n\nCaused by:\n  process didn't exit successfully: `C:\\Users\\ADMIN\\.rustup\\toolchains\\nightly-2026-10-20-x86_64-pc-windows-msvc\\bin\\cargo-miri.exe runner C:\\Users\\ADMIN\\AppData\\Local\\Temp\\.tmpFQbt7A\\target\\miri\\x86_64-pc-windows-msvc\\debug\\build\\warrant-verification-target/5cbe5bcd3d0b813a\\out\\warrant_verification_target-5cbe5bcd3d0b813a.exe warrant_proof::proof_` (exit code: 1)\nnote: test exited abnormally; to see the full output pass --no-capture to the harness.\n",
+  "harness_code": "#[cfg(test)]\nmod warrant_proof {\n    #![forbid(unsafe_code)]\n    extern crate std;\n    use super::*;\n\n    #[test]\n    fn proof_rustsec_anon_05() {\n        let q = UnsyncQueue::new(0);\n        std::thread::scope(|s| {\n            s.spawn(|| {\n                for i in 0..10 {\n                    q.push(i);\n                }\n            });\n            s.spawn(|| {\n                for _ in 0..10 {\n                    std::hint::black_box(q.pop());\n                }\n            });\n        });\n        std::hint::black_box(q.pop());\n    }\n}",
+  "harness_sha256": "4b956fed74f532815b00804451325bcad3806cdc78fd8dd681a590c6dec5be0c",
+  "verdict": "PROVEN_PUBLIC",
+  "location_attestation": {
+    "symbol": "UnsyncQueue",
+    "file_path": "bench/rustsec_anon/rustsec_anon_05_r2_queue_send_race.rs",
+    "line_span": [
+      15,
+      15
+    ],
+    "verified_in_trace": true
+  },
+  "execution_duration_ms": 3520,
+  "reproduction_command": "cargo +nightly-2026-10-20 miri test --lib warrant_proof::proof_",
+  "candidate": {
+    "id": "c-0001",
+    "crate_name": "rustsec_bench",
+    "file_path": "bench/rustsec_anon/rustsec_anon_05_r2_queue_send_race.rs",
+    "start_line": 15,
+    "end_line": 15,
+    "kind": "unsafe_impl",
+    "code_snippet": "unsafe impl Sync for UnsyncQueue { }",
+    "enclosing_item": "UnsyncQueue",
+    "safety_comment": "// BUG: `unsafe impl Sync` on `UnsafeCell` permits unsynchronized concurrent read/write across threads.",
+    "trait_name": "Sync",
+    "rule": "R2",
+    "visibility": "pub"
+  },
+  "hypothesis": {
+    "id": "hyp-rustsec_anon_05",
+    "candidate_id": "c-0001",
+    "ub_class": "data_race",
+    "explanation": "RustSec reproduction for UnsyncQueue unsynchronized concurrent consumer pops",
+    "harness_code": "#[cfg(test)]\nmod warrant_proof {\n    #![forbid(unsafe_code)]\n    extern crate std;\n    use super::*;\n\n    #[test]\n    fn proof_rustsec_anon_05() {\n        let q = UnsyncQueue::new(0);\n        std::thread::scope(|s| {\n            s.spawn(|| {\n                for i in 0..10 {\n                    q.push(i);\n                }\n            });\n            s.spawn(|| {\n                for _ in 0..10 {\n                    std::hint::black_box(q.pop());\n                }\n            });\n        });\n        std::hint::black_box(q.pop());\n    }\n}",
+    "suggested_miri_flags": [],
+    "expected_trigger": ""
+  },
+  "finding": {
+    "id": "fnd-8237245cd8974d3ab1b5813ae7e009b8",
+    "candidate_id": "c-0001",
+    "hypothesis_id": "hyp-rustsec_anon_05",
+    "ub_class": "data_race",
+    "status": "proven_bug",
+    "harness_code": "#[cfg(test)]\nmod warrant_proof {\n    #![forbid(unsafe_code)]\n    extern crate std;\n    use super::*;\n\n    #[test]\n    fn proof_rustsec_anon_05() {\n        let q = UnsyncQueue::new(0);\n        std::thread::scope(|s| {\n            s.spawn(|| {\n                for i in 0..10 {\n                    q.push(i);\n                }\n            });\n            s.spawn(|| {\n                for _ in 0..10 {\n                    std::hint::black_box(q.pop());\n                }\n            });\n        });\n        std::hint::black_box(q.pop());\n    }\n}",
+    "miri_stdout": "\nrunning 1 test\ntest warrant_proof::proof_rustsec_anon_05 ... ",
+    "miri_stderr": "   Compiling warrant-verification-target v0.1.0 (C:\\Users\\ADMIN\\AppData\\Local\\Temp\\.tmpFQbt7A)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.21s\n     Running unittests src\\lib.rs (target\\miri\\x86_64-pc-windows-msvc\\debug\\build\\warrant-verification-target/5cbe5bcd3d0b813a\\out\\warrant_verification_target-5cbe5bcd3d0b813a.exe)\nerror: Undefined Behavior: Data race detected between (1) non-atomic read on thread `unnamed-3` and (2) non-atomic write on thread `unnamed-2` at alloc48321\n  --> src\\lib.rs:26:13\n   |\n26 |             *self.slot.get() = val;\n   |             ^^^^^^^^^^^^^^^^^^^^^^ (2) just happened here\n   |\nhelp: and (1) occurred earlier here\n  --> src\\lib.rs:32:13\n   |\n32 |             *self.slot.get()\n   |             ^^^^^^^^^^^^^^^^\n   = help: this indicates a bug in the program: it performed an invalid operation, and caused Undefined Behavior\n   = help: see https://doc.rust-lang.org/nightly/reference/behavior-considered-undefined.html for further information\n   = note: this is on thread `unnamed-2`\n   = note: stack backtrace:\n           0: UnsyncQueue::push\n               at src\\lib.rs:26:13: 26:35\n           1: warrant_proof::proof_rustsec_anon_05::{closure#0}::{closure#0}\n               at src\\lib.rs:52:21: 52:30\nnote: the last function in that backtrace got called indirectly due to this code\n  --> src\\lib.rs:50:13\n   |\n50 | /             s.spawn(|| {\n51 | |                 for i in 0..10 {\n52 | |                     q.push(i);\n53 | |                 }\n54 | |             });\n   | |______________^\n\nnote: some details are omitted, run with `MIRIFLAGS=-Zmiri-backtrace=full` for a verbose backtrace\n\nerror: aborting due to 1 previous error\n\nerror: test failed, to rerun pass `--lib`\n\nCaused by:\n  process didn't exit successfully: `C:\\Users\\ADMIN\\.rustup\\toolchains\\nightly-2026-10-20-x86_64-pc-windows-msvc\\bin\\cargo-miri.exe runner C:\\Users\\ADMIN\\AppData\\Local\\Temp\\.tmpFQbt7A\\target\\miri\\x86_64-pc-windows-msvc\\debug\\build\\warrant-verification-target/5cbe5bcd3d0b813a\\out\\warrant_verification_target-5cbe5bcd3d0b813a.exe warrant_proof::proof_` (exit code: 1)\nnote: test exited abnormally; to see the full output pass --no-capture to the harness.\n",
+    "exit_code": 1,
+    "evidence_hash": "d125f74673d170dd4e5f9ddd560f0368554196334158a2fd9bb9f9d4e1dff7bb",
+    "timestamp_rfc3339": "2026-10-28T00:00:00Z",
+    "patch_status": null,
+    "patch_code": null,
+    "patch_diff": null
+  },
+  "patch_status": null,
+  "patch_code": null,
+  "patch_diff": null
+}

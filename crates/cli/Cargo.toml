@@ -1,0 +1,63 @@
+[package]
+name = "warrant-cli"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "warrant"
+path = "src/main.rs"
+
+[[bin]]
+name = "probe"
+path = "src/bin/probe.rs"
+
+[[bin]]
+name = "verify_gold"
+path = "src/bin/verify_gold.rs"
+
+[[bin]]
+name = "eval_gate1"
+path = "src/bin/eval_gate1.rs"
+
+[[bin]]
+name = "verify_pairs"
+path = "src/bin/verify_pairs.rs"
+
+[[bin]]
+name = "eval_baselines"
+path = "src/bin/eval_baselines.rs"
+
+[[bin]]
+name = "verify_rustsec"
+path = "src/bin/verify_rustsec.rs"
+
+[[bin]]
+name = "eval_metrics_gate2"
+path = "src/bin/eval_metrics_gate2.rs"
+
+[[bin]]
+name = "eval_patches"
+path = "src/bin/eval_patches.rs"
+
+[[bin]]
+name = "final_benchmark_runs"
+path = "src/bin/final_benchmark_runs.rs"
+
+
+[dependencies]
+warrant-extract = { workspace = true }
+warrant-llm = { workspace = true }
+warrant-verify = { workspace = true }
+clap = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+anyhow = { workspace = true }
+thiserror = { workspace = true }
+dotenvy = { workspace = true }
+tempfile = { workspace = true }
+

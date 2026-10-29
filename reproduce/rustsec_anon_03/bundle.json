@@ -1,0 +1,71 @@
+{
+  "bundle_id": "evb-d9fc7b44ee7f4a8ea1ce06e7c1d6a645",
+  "candidate_id": "c-0001",
+  "target_commit": "0000000000000000000000000000000000000000",
+  "toolchain": "nightly-2026-10-20",
+  "miri_flags": [
+    "-Zmiri-tree-borrows",
+    "-Zmiri-strict-provenance",
+    "-Zmiri-preemption-rate=0"
+  ],
+  "commands": [
+    "cargo +nightly-2026-10-20 miri test --lib warrant_proof::proof_"
+  ],
+  "stdout": "\nrunning 1 test\ntest warrant_proof::proof_rustsec_anon_03 ... ",
+  "stderr": "   Compiling warrant-verification-target v0.1.0 (C:\\Users\\ADMIN\\AppData\\Local\\Temp\\.tmpxaifk3)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.22s\n     Running unittests src\\lib.rs (target\\miri\\x86_64-pc-windows-msvc\\debug\\build\\warrant-verification-target/5cbe5bcd3d0b813a\\out\\warrant_verification_target-5cbe5bcd3d0b813a.exe)\nerror: Undefined Behavior: constructing invalid value of type &[u8]: encountered a dangling reference (going beyond the bounds of its allocation)\n  --> src\\lib.rs:27:27\n   |\n27 |             Some(unsafe { std::slice::from_raw_parts(self.storage.as_ptr().add(start), len) })\n   |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Undefined Behavior occurred here\n   |\n   = help: this indicates a bug in the program: it performed an invalid operation, and caused Undefined Behavior\n   = help: see https://doc.rust-lang.org/nightly/reference/behavior-considered-undefined.html for further information\n   = note: this is on thread `warrant_proof::proof_rustsec_anon_03`\n   = note: stack backtrace:\n           0: ChunkArena::alloc_slice\n               at src\\lib.rs:27:27: 27:92\n           1: warrant_proof::proof_rustsec_anon_03\n               at src\\lib.rs:53:21: 53:42\n           2: warrant_proof::proof_rustsec_anon_03::{closure#0}\n               at src\\lib.rs:50:31: 50:31\n\nnote: some details are omitted, run with `MIRIFLAGS=-Zmiri-backtrace=full` for a verbose backtrace\n\nerror: aborting due to 1 previous error\n\nerror: test failed, to rerun pass `--lib`\n\nCaused by:\n  process didn't exit successfully: `C:\\Users\\ADMIN\\.rustup\\toolchains\\nightly-2026-10-20-x86_64-pc-windows-msvc\\bin\\cargo-miri.exe runner C:\\Users\\ADMIN\\AppData\\Local\\Temp\\.tmpxaifk3\\target\\miri\\x86_64-pc-windows-msvc\\debug\\build\\warrant-verification-target/5cbe5bcd3d0b813a\\out\\warrant_verification_target-5cbe5bcd3d0b813a.exe warrant_proof::proof_` (exit code: 1)\nnote: test exited abnormally; to see the full output pass --no-capture to the harness.\n",
+  "harness_code": "#[cfg(test)]\nmod warrant_proof {\n    #![forbid(unsafe_code)]\n    extern crate std;\n    use super::*;\n\n    #[test]\n    fn proof_rustsec_anon_03() {\n        let mut arena = ChunkArena::new();\n        // Requesting 48 bytes exceeds the 32-byte storage buffer, triggering dangling slice UB\n        let slice = arena.alloc_slice(48);\n        std::hint::black_box(slice);\n    }\n}",
+  "harness_sha256": "ccfbee298fc63af848adcb0ca6def6c3aa1f9cb7d9f629c4fa195c22f06dd241",
+  "verdict": "PROVEN_PUBLIC",
+  "location_attestation": {
+    "symbol": "ChunkArena::alloc_slice",
+    "file_path": "bench/rustsec_anon/rustsec_anon_03_r1_arena_chunk.rs",
+    "line_span": [
+      27,
+      27
+    ],
+    "verified_in_trace": true
+  },
+  "execution_duration_ms": 3266,
+  "reproduction_command": "cargo +nightly-2026-10-20 miri test --lib warrant_proof::proof_",
+  "candidate": {
+    "id": "c-0001",
+    "crate_name": "rustsec_bench",
+    "file_path": "bench/rustsec_anon/rustsec_anon_03_r1_arena_chunk.rs",
+    "start_line": 27,
+    "end_line": 27,
+    "kind": "unsafe_block",
+    "code_snippet": "unsafe { std :: slice :: from_raw_parts (self . storage . as_ptr () . add (start) , len) }",
+    "enclosing_item": "ChunkArena::alloc_slice",
+    "safety_comment": "// BUG: Constructs a slice extending past the 32-byte storage buffer!",
+    "rule": "R1",
+    "visibility": "pub"
+  },
+  "hypothesis": {
+    "id": "hyp-rustsec_anon_03",
+    "candidate_id": "c-0001",
+    "ub_class": "ub_oob",
+    "explanation": "RustSec reproduction for ChunkArena slice allocation exceeding chunk boundary",
+    "harness_code": "#[cfg(test)]\nmod warrant_proof {\n    #![forbid(unsafe_code)]\n    extern crate std;\n    use super::*;\n\n    #[test]\n    fn proof_rustsec_anon_03() {\n        let mut arena = ChunkArena::new();\n        // Requesting 48 bytes exceeds the 32-byte storage buffer, triggering dangling slice UB\n        let slice = arena.alloc_slice(48);\n        std::hint::black_box(slice);\n    }\n}",
+    "suggested_miri_flags": [],
+    "expected_trigger": ""
+  },
+  "finding": {
+    "id": "fnd-10b6af4aaa5b4ed7b92003c5548b10d8",
+    "candidate_id": "c-0001",
+    "hypothesis_id": "hyp-rustsec_anon_03",
+    "ub_class": "ub_oob",
+    "status": "proven_bug",
+    "harness_code": "#[cfg(test)]\nmod warrant_proof {\n    #![forbid(unsafe_code)]\n    extern crate std;\n    use super::*;\n\n    #[test]\n    fn proof_rustsec_anon_03() {\n        let mut arena = ChunkArena::new();\n        // Requesting 48 bytes exceeds the 32-byte storage buffer, triggering dangling slice UB\n        let slice = arena.alloc_slice(48);\n        std::hint::black_box(slice);\n    }\n}",
+    "miri_stdout": "\nrunning 1 test\ntest warrant_proof::proof_rustsec_anon_03 ... ",
+    "miri_stderr": "   Compiling warrant-verification-target v0.1.0 (C:\\Users\\ADMIN\\AppData\\Local\\Temp\\.tmpxaifk3)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.22s\n     Running unittests src\\lib.rs (target\\miri\\x86_64-pc-windows-msvc\\debug\\build\\warrant-verification-target/5cbe5bcd3d0b813a\\out\\warrant_verification_target-5cbe5bcd3d0b813a.exe)\nerror: Undefined Behavior: constructing invalid value of type &[u8]: encountered a dangling reference (going beyond the bounds of its allocation)\n  --> src\\lib.rs:27:27\n   |\n27 |             Some(unsafe { std::slice::from_raw_parts(self.storage.as_ptr().add(start), len) })\n   |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Undefined Behavior occurred here\n   |\n   = help: this indicates a bug in the program: it performed an invalid operation, and caused Undefined Behavior\n   = help: see https://doc.rust-lang.org/nightly/reference/behavior-considered-undefined.html for further information\n   = note: this is on thread `warrant_proof::proof_rustsec_anon_03`\n   = note: stack backtrace:\n           0: ChunkArena::alloc_slice\n               at src\\lib.rs:27:27: 27:92\n           1: warrant_proof::proof_rustsec_anon_03\n               at src\\lib.rs:53:21: 53:42\n           2: warrant_proof::proof_rustsec_anon_03::{closure#0}\n               at src\\lib.rs:50:31: 50:31\n\nnote: some details are omitted, run with `MIRIFLAGS=-Zmiri-backtrace=full` for a verbose backtrace\n\nerror: aborting due to 1 previous error\n\nerror: test failed, to rerun pass `--lib`\n\nCaused by:\n  process didn't exit successfully: `C:\\Users\\ADMIN\\.rustup\\toolchains\\nightly-2026-10-20-x86_64-pc-windows-msvc\\bin\\cargo-miri.exe runner C:\\Users\\ADMIN\\AppData\\Local\\Temp\\.tmpxaifk3\\target\\miri\\x86_64-pc-windows-msvc\\debug\\build\\warrant-verification-target/5cbe5bcd3d0b813a\\out\\warrant_verification_target-5cbe5bcd3d0b813a.exe warrant_proof::proof_` (exit code: 1)\nnote: test exited abnormally; to see the full output pass --no-capture to the harness.\n",
+    "exit_code": 1,
+    "evidence_hash": "d7cc17b1e16dad9277246654864de6d1a3fb402a008230bcb513682b978f4470",
+    "timestamp_rfc3339": "2026-10-28T00:00:00Z",
+    "patch_status": null,
+    "patch_code": null,
+    "patch_diff": null
+  },
+  "patch_status": null,
+  "patch_code": null,
+  "patch_diff": null
+}

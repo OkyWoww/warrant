@@ -1,0 +1,64 @@
+name: WARRANT Unsafe Soundness Audit
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  soundness-audit:
+    name: Miri Proof Audit (WARRANT)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Pinned Nightly Rust with Miri
+        uses: dtolnay/rust-toolchain@nightly
+        with:
+          toolchain: nightly-2026-10-20
+          components: miri, rust-src
+
+      - name: Cache Cargo Dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-warrant-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-warrant-
+
+      - name: Build WARRANT CLI
+        run: cargo build --release -p warrant-cli
+
+      - name: Run WARRANT Audit
+        id: audit
+        run: |
+          ./target/release/warrant audit . --backend mock --output-dir evidence
+        continue-on-error: true
+
+      - name: Upload Audit Reports and Evidence Bundles
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: warrant-soundness-audit-report
+          path: |
+            evidence/warrant_report.md
+            evidence/warrant_report.html
+            evidence/
+          retention-days: 14
+
+      - name: Enforce Zero Proven Soundness Bugs (CI Status Check)
+        run: |
+          if [ "${{ steps.audit.outcome }}" != "success" ]; then
+            echo "::error::WARRANT detected at least one PROVEN soundness bug under Miri! Check the uploaded evidence bundle."
+            exit 1
+          fi
+          echo "WARRANT Audit passed cleanly: Zero proven soundness bugs."
