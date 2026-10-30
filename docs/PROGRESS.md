@@ -3015,7 +3015,7 @@ Captured live on `2026-10-30T02:27:22Z` via `warrant demo --backend meta-api` (r
 | 7 | `repair:c-0002` | `c-0002` (`r2_01_cell_sync`) | `muse-spark-1.3` | 200 OK | 914 | 7,157 | 44,049 ms | `$0.031560` |
 | 8 | `patch:c-0002` | `c-0002` (`r2_01_cell_sync`) | `muse-spark-1.3` | 200 OK | 807 | 1,685 | 10,258 ms | `$0.008170` |
 | 9 | `hypothesis:c-0003` | `c-0003` (`r1_01_slice_get_safe`) | `muse-spark-1.3` | 200 OK | 751 | 3,337 | 16,238 ms | `$0.015121` |
-| **Total** | **9 Live Calls** | **3 Demo Cases** | **muse-spark-1.3** | **200 OK** | **9,458** | **36,964** | **Mean: 23,771 ms** | **`$0.169685 USD`** |
+| **Total** | **9 Live Calls** | **3 Demo Cases** | **muse-spark-1.3** | **200 OK** | **8,896** | **37,309** | **Mean: 23,771 ms** | **`$0.169685 USD`** |
 
 ### 3. Evidence: Host Sandbox Honesty Audit
 Exact wording verified across `README.md`, `docs/LIMITS.md`, `docs/DEMO.md`, and `docs/VIDEO_SCRIPT.md`:
@@ -3024,7 +3024,7 @@ Exact wording verified across `README.md`, `docs/LIMITS.md`, `docs/DEMO.md`, and
 ### 4. Evidence: Full Workspace Verification
 - `cargo check --workspace`: Finished cleanly (Exit code 0, 0.48s).
 - `cargo clippy --workspace -- -D warnings`: Finished cleanly (Exit code 0, 0 warnings, 4.89s).
-- `cargo test --workspace`: Finished cleanly (Exit code 0, 62 passed; 0 failed; 0 ignored).
+- `cargo test --workspace`: Finished cleanly (Exit code 0, 63 passed; 0 failed; 0 ignored).
 
 ### Next
 - Freeze repository for pre-submission checks and demo video recording. All audit criteria fully satisfied.
