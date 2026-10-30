@@ -487,3 +487,67 @@ mod warrant_proof {
     assert!(stdout.contains("[VERIFIED]") || stdout.contains("Reproducer successfully confirmed failure"));
 }
 
+#[tokio::test]
+async fn test_e2e_r2_05_split_borrow_safe_miri_clean() {
+    let target_code = load_target_fixture("bench/pairs/r2_05_split_borrow_safe.rs");
+    assert!(target_code.contains("pub struct ParallelPair"));
+
+    let candidate = Candidate {
+        id: "c-r2-05-safe".to_string(),
+        crate_name: "target_lib".to_string(),
+        file_path: "bench/pairs/r2_05_split_borrow_safe.rs".to_string(),
+        start_line: 22,
+        end_line: 30,
+        kind: CandidateKind::UnsafeBlock,
+        code_snippet: "unsafe { let base = self.pair.get().cast::<u64>(); *base.add(0) = val; }".to_string(),
+        enclosing_item: Some("ParallelPair::write_left".to_string()),
+        safety_comment: None,
+        trait_name: None,
+        rule: Some("R2".to_string()),
+        visibility: Some("pub".to_string()),
+    };
+
+    let harness = CandidateHarness {
+        rule: "R2".to_string(),
+        explanation: "Concurrent disjoint index access across two threads on atomic-guarded ParallelPair".to_string(),
+        harness_code: r#"#[cfg(test)]
+mod warrant_proof {
+    #![forbid(unsafe_code)]
+    extern crate std;
+    use super::*;
+
+    #[test]
+    fn proof_r2_05_safe_concurrency() {
+        let pair = ParallelPair::new(0, 0);
+        std::thread::scope(|s| {
+            s.spawn(|| {
+                pair.write_left(100);
+            });
+            s.spawn(|| {
+                pair.write_right(200);
+            });
+        });
+    }
+}
+"#.to_string(),
+        estimated_budget_usd: 0.0,
+    };
+
+    let flags = vec![
+        "-Zmiri-tree-borrows".to_string(),
+        "-Zmiri-strict-provenance".to_string(),
+        "-Zmiri-preemption-rate=0".to_string(),
+    ];
+    let runner: Box<dyn ProofRunner> = Box::new(LocalMiriRunner::new(Duration::from_secs(60), flags.clone()));
+    let pipeline = VerificationPipeline::with_flags(runner, flags);
+
+    let outcome = pipeline
+        .verify(&target_code, &candidate, &harness)
+        .await
+        .expect("Verification must complete");
+
+    assert!(!outcome.is_proven(), "Safe control must not trigger false positive proof");
+    assert_eq!(outcome.status, VerificationStatus::SoundSafe);
+    assert_eq!(outcome.miri_output.as_ref().unwrap().exit_code, Some(0));
+}
+

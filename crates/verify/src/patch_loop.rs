@@ -104,6 +104,16 @@ path = "src/lib.rs"
 "#;
         fs::write(pkg_path.join("Cargo.toml"), cargo_toml)?;
 
+        let toolchain_toml = format!(
+            r#"[toolchain]
+channel = "{}"
+components = ["rust-src", "miri"]
+profile = "minimal"
+"#,
+            crate::bundle::PINNED_TOOLCHAIN
+        );
+        fs::write(pkg_path.join("rust-toolchain.toml"), toolchain_toml)?;
+
         let src_dir = pkg_path.join("src");
         fs::create_dir_all(&src_dir)?;
 

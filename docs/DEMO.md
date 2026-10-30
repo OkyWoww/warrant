@@ -25,10 +25,19 @@ Cut order if the video runs long: benchmark detail, Act 3, the stakes slide. Nev
 
 `warrant audit --events <path>` and `warrant demo --events <path>` write one JSON object per line (schema in `docs/SPEC.md` section 4). The step chips, tool-call captions, elapsed timers, cost counters, and speed labels in the video MUST be generated programmatically from `events.jsonl` (and `docs/DEMO_CACHE.json`), not drawn by hand, typed, or hardcoded.
 
-Every on-screen model call caption is derived directly from the `CallRecord` ledger fields (`prompt_tokens -> completion_tokens`, `latency_ms`, `cost_usd`, and model `muse-spark-1.3-contributor`). Real measured examples from the demo cache:
-- `c-0001` (flagship SmallVec bug): hypothesis `1,056 prompt -> 2,999 completion tokens`, `10,596 ms`, `$0.014066 USD`, resolved model `muse-spark-1.3-contributor`.
-- `c-0002` (concurrency mutant): hypothesis `675 prompt -> 3,211 completion tokens`, `11,048 ms`, `$0.014526 USD`, resolved model `muse-spark-1.3-contributor`.
-- `c-0003` (sound safe control): hypothesis `751 prompt -> 3,287 completion tokens`, `11,387 ms`, `$0.014967 USD`, resolved model `muse-spark-1.3-contributor` (held back as `UNPROVEN`).
+Every on-screen model call caption is derived directly from the `CallRecord` ledger fields (`prompt_tokens -> completion_tokens`, `latency_ms`, `cost_usd`, and model `muse-spark-1.3-contributor`). Real measured call records from `docs/DEMO_CACHE.json` (captured at `2026-10-30T02:27:22Z`, 9 calls, `8,896` prompt tokens, `37,309` completion tokens, `$0.169685 USD`):
+- `c-0001` (flagship SmallVec `RUSTSEC-2021-0003`, 4 calls, 4,832 prompt, 14,941 completion, $0.069540 USD):
+  - `hypothesis:c-0001`: `1,056 prompt -> 3,090 completion tokens`, `19,262 ms`, `$0.014453 USD`, model `muse-spark-1.3`.
+  - `repair:c-0001` (round 1): `1,304 prompt -> 3,696 completion tokens`, `19,844 ms`, `$0.017338 USD`, model `muse-spark-1.3`.
+  - `repair:c-0001` (round 2): `1,291 prompt -> 4,478 completion tokens`, `29,177 ms`, `$0.020645 USD`, model `muse-spark-1.3`.
+  - `patch:c-0001` (round 1): `1,181 prompt -> 3,677 completion tokens`, `22,061 ms`, `$0.017104 USD`, model `muse-spark-1.3`.
+- `c-0002` (concurrency `r2_01_cell_sync_mutant`, 4 calls, 3,313 prompt, 19,031 completion, $0.085024 USD):
+  - `hypothesis:c-0002`: `675 prompt -> 4,415 completion tokens`, `24,093 ms`, `$0.019608 USD`, model `muse-spark-1.3`.
+  - `repair:c-0002` (round 1): `917 prompt -> 5,774 completion tokens`, `28,960 ms`, `$0.025686 USD`, model `muse-spark-1.3`.
+  - `repair:c-0002` (round 2): `914 prompt -> 7,157 completion tokens`, `44,049 ms`, `$0.031560 USD`, model `muse-spark-1.3`.
+  - `patch:c-0002` (round 1): `807 prompt -> 1,685 completion tokens`, `10,258 ms`, `$0.008170 USD`, model `muse-spark-1.3`.
+- `c-0003` (sound safe control `r1_01_slice_get_safe`, 1 call, 751 prompt, 3,337 completion, $0.015121 USD):
+  - `hypothesis:c-0003`: `751 prompt -> 3,337 completion tokens`, `16,238 ms`, `$0.015121 USD`, model `muse-spark-1.3` (held back as `UNPROVEN`).
 
 Reference video style is followed for structure only; never copy branding, trademarks, or visual assets of reference materials.
 

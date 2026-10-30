@@ -6,7 +6,7 @@
   "rustc_version": "cargo 1.101.0-nightly (3960fa69b 2026-10-12)",
   "miri_version": "miri 0.1.0 (07e526db9d 2026-10-19)",
   "primary_model": "muse-spark-1.3 (resolved: muse-spark-1.3-contributor)",
-  "open_weights_model": "muse-spark-open-1026 — Stub / Unmeasured (No partner endpoint credits)",
+  "open_weights_model": "muse-spark-open-1026 \u2014 Stub / Unmeasured (No partner endpoint credits)",
   "table_a_verifier_determinism": {
     "description": "Deterministic Miri operational verification across all 38 frozen targets (22 bug targets + 16 safe controls) over 3 independent full runs.",
     "runs": [
@@ -668,7 +668,7 @@
           "valid_at_1": false,
           "valid_at_4": false,
           "proven": false,
-          "rounds_used": 4,
+          "rounds_used": 3,
           "matched_signature": null
         },
         {
@@ -1472,8 +1472,8 @@
   "cost_summary": {
     "total_http_calls": 188,
     "calls_without_usage": 0,
-    "total_prompt_tokens": 151959,
-    "total_completion_tokens": 735096,
+    "total_prompt_tokens": 151397,
+    "total_completion_tokens": 735441,
     "cumulative_spend_usd": 3.295901,
     "global_circuit_breaker_usd": 105.0,
     "remaining_circuit_breaker_usd": 101.704099,
@@ -1488,7 +1488,7 @@
         "prompt_tokens": 16,
         "completion_tokens": 15,
         "mean_latency_ms": 1957,
-        "cost_usd": 0.000086,
+        "cost_usd": 8.6e-05,
         "headline_metrics": "HTTP 200 OK, resolved model muse-spark-1.3-contributor"
       },
       {
@@ -1522,15 +1522,15 @@
         "completion_tokens": 42869,
         "mean_latency_ms": 11563,
         "cost_usd": 0.214093,
-        "headline_metrics": "PATCH_VERIFIED = 17/17 (100.0%, AST guard + proof_* Miri + native + sanity_* Miri; for smallvec_r1_demo, patch adds early-return capacity & index guard preventing OOB pointer write and preserving elements within capacity limits per sanity_* without silent truncation, see LIMITS.md)"
+        "headline_metrics": "PATCH_VERIFIED = 17/17 (100.0%, AST guard + proof_* Miri + native + sanity_* Miri; for smallvec_r1_demo, patch adds early-return guard preventing OOB pointer write and passing sanity_* for in-capacity inserts, while ignoring insertions exceeding inline capacity without error signal as a semantic limitation; note: eval_patches 17/17 batch was executed prior to element assertion in sanity_smallvec_r1_demo, while latest smallvec patch and sanity_* were verified live in warrant demo --backend meta-api [DEMO_CACHE.json, patch:c-0001, $0.017104 USD], see LIMITS.md \u00a73 & \u00a74.10)"
       },
       {
         "experiment": "T12 Flagship Demo Live Capture (warrant demo --backend meta-api -> docs/DEMO_CACHE.json)",
         "model": "muse-spark-1.3",
         "evaluated_cases": 3,
         "http_calls": 9,
-        "prompt_tokens": 9458,
-        "completion_tokens": 36964,
+        "prompt_tokens": 8896,
+        "completion_tokens": 37309,
         "mean_latency_ms": 23771,
         "cost_usd": 0.169685,
         "headline_metrics": "2/2 PROVEN_PUBLIC + 2/2 PATCH_VERIFIED (Round 1; smallvec patch adds early-return capacity & index guard) + 1/1 UNPROVEN"

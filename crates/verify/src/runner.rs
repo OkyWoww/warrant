@@ -117,6 +117,8 @@ impl ProofRunner for LocalMiriRunner {
             .stdout(Stdio::piped())
             .stderr(Stdio::piped());
 
+        cmd.env("RUSTUP_TOOLCHAIN", crate::bundle::PINNED_TOOLCHAIN);
+
         if !self.miri_flags.is_empty() {
             cmd.env("MIRIFLAGS", self.miri_flags.join(" "));
         }
@@ -147,6 +149,7 @@ impl ProofRunner for LocalMiriRunner {
             .arg("--no-run")
             .stdout(Stdio::piped())
             .stderr(Stdio::piped());
+        cmd.env("RUSTUP_TOOLCHAIN", crate::bundle::PINNED_TOOLCHAIN);
         if let Some(ref target_dir) = self.shared_target_dir {
             cmd.env("CARGO_TARGET_DIR", target_dir);
         }
@@ -167,6 +170,7 @@ impl ProofRunner for LocalMiriRunner {
             .arg("--lib")
             .stdout(Stdio::piped())
             .stderr(Stdio::piped());
+        cmd.env("RUSTUP_TOOLCHAIN", crate::bundle::PINNED_TOOLCHAIN);
         if let Some(ref target_dir) = self.shared_target_dir {
             cmd.env("CARGO_TARGET_DIR", target_dir);
         }

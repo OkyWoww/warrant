@@ -1,6 +1,9 @@
 //! # RustSec Anonymized 01: Buffer expansion and element shifting bug (R1 UbOob)
 //!
-//! Self-contained host-compilable reproduction adapted from historical RustSec advisory patterns (RUSTSEC-2021-0003, `smallvec` `>= 0.6.3, < 0.6.14`, MIT/Apache-2.0).
+//! Self-contained simplified reproduction adapted from the buffer overflow class behind
+//! RUSTSEC-2021-0003 / CVE-2021-25900 in SmallVec::insert_many (used as advisory pattern
+//! inspiration; implemented as an inline 4-element fixed buffer without dynamic heap growth).
+//! Original License: MIT / Apache-2.0 (Dual License)
 //! In `CompactBuffer`, `insert_slice` shifts elements to the right before ensuring
 //! sufficient backing capacity has been allocated.
 //! Fails under Miri with memory access / pointer arithmetic out-of-bounds.

@@ -17,7 +17,7 @@ Storyboard follows `docs/DEMO.md`. Every number on screen comes from `docs/FINAL
 **Screen:** `bench/real_world_demo/smallvec_r1_demo.rs`, highlight the `ptr::copy` in `insert_many`.
 
 **Voice-over:**
-> "This is a self-contained reproduction of RUSTSEC-2021-0003, a buffer overflow pattern from smallvec. It compiles. Clippy is quiet. An LLM can *guess* it's buggy — but a guess is not a finding. WARRANT only reports a bug when a 100% safe-Rust harness makes Miri fail at the exact unsafe line."
+> "This is a self-contained reproduction of the buffer overflow vulnerability class behind RUSTSEC-2021-0003 in SmallVec::insert_many. It compiles. Clippy is quiet. An LLM can *guess* it's buggy — but a guess is not a finding. WARRANT only reports a bug when a 100% safe-Rust harness makes Miri fail at the exact unsafe line."
 
 **Terminal (optional, 5 s):**
 ```bash
@@ -33,10 +33,10 @@ cargo clippy --manifest-path <scratch crate> -- -D warnings   # no warning on th
 
 **Show:**
 1. Stage chips going green: `extract → hypothesis → harness → compile → miri_red → signature → location → tier`.
-2. Programmatic call captions generated from `events.jsonl` / `DEMO_CACHE.json`:
-   - `c-0001` (SmallVec R1): `1,056 -> 2,999 tokens`, `10,596 ms`, `$0.014066 USD`, model `muse-spark-1.3-contributor`.
-   - `c-0002` (concurrency R2): `675 -> 3,211 tokens`, `11,048 ms`, `$0.014526 USD`, model `muse-spark-1.3-contributor`.
-   - `c-0003` (safe control R1): `751 -> 3,287 tokens`, `11,387 ms`, `$0.014967 USD`, model `muse-spark-1.3-contributor`.
+2. Programmatic call captions generated from `events.jsonl` / `DEMO_CACHE.json` (captured 2026-10-30T02:27:22Z, 9 calls, $0.169685 USD):
+   - `c-0001` (SmallVec R1, 4 calls, $0.069540 USD): hypothesis `1,056 -> 3,090 tokens` (`19,262 ms`, `$0.014453`), repair #1 `1,304 -> 3,696 tokens` (`19,844 ms`), repair #2 `1,291 -> 4,478 tokens` (`29,177 ms`), patch `1,181 -> 3,677 tokens` (`22,061 ms`).
+   - `c-0002` (concurrency R2, 4 calls, $0.085024 USD): hypothesis `675 -> 4,415 tokens` (`24,093 ms`, `$0.019608`), repair #1 `917 -> 5,774 tokens` (`28,960 ms`), repair #2 `914 -> 7,157 tokens` (`44,049 ms`), patch `807 -> 1,685 tokens` (`10,258 ms`).
+   - `c-0003` (safe control R1, 1 call, $0.015121 USD): hypothesis `751 -> 3,337 tokens` (`16,238 ms`, model `muse-spark-1.3`, held back as `UNPROVEN`).
 3. Open the generated harness: first lines are `#![forbid(unsafe_code)]` and `extern crate std;`.
 4. Miri output: `Undefined Behavior: in-bounds pointer arithmetic failed` pointing at the `ptr.add(...)` line → verdict `PROVEN_PUBLIC`.
 5. Case 3 (safe control) ends `UNPROVEN` — "held back, never reported without proof".
@@ -79,14 +79,14 @@ reproduce/real_world_rustsec/reproduce.sh     # Windows: reproduce\real_world_ru
 | False proofs on safe controls | **0/16** |
 | Live `muse-spark-1.3` valid@1 → valid@4 | **79.54% → 100%** |
 | PATCH_VERIFIED | **17/17** |
-| Total Meta API spend | **\$1.61** across **121** live calls |
+| Total Meta API spend | **\$3.30** ($3.295901 USD) across **188** live calls |
 
 > "Built on Meta's muse-spark-1.3. Every token and every cent comes from the API's own usage field."
 
 ## 2:45 – 3:00 · End Card
 
 - Tagline: **"No proof, no finding."**
-- Repo URL: `<public GitHub URL — fill in before recording>`
+- Repo URL: `https://github.com/OkyWoww/warrant`
 - "Dual-licensed MIT / Apache-2.0. RustSec reproductions keep their original MIT/Apache-2.0 attribution."
 
 ---

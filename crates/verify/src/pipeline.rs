@@ -91,7 +91,7 @@ impl VerificationPipeline {
         let temp_dir = tempfile::tempdir()?;
         let pkg_path = temp_dir.path().to_path_buf();
 
-        // 1. Create Cargo.toml
+        // 1. Create Cargo.toml and rust-toolchain.toml
         let cargo_toml = r#"[package]
 name = "warrant-verification-target"
 version = "0.1.0"
@@ -101,6 +101,16 @@ edition = "2021"
 path = "src/lib.rs"
 "#;
         fs::write(pkg_path.join("Cargo.toml"), cargo_toml)?;
+
+        let toolchain_toml = format!(
+            r#"[toolchain]
+channel = "{}"
+components = ["rust-src", "miri"]
+profile = "minimal"
+"#,
+            crate::bundle::PINNED_TOOLCHAIN
+        );
+        fs::write(pkg_path.join("rust-toolchain.toml"), toolchain_toml)?;
 
         // 2. Create src/ directory
         let src_dir = pkg_path.join("src");

@@ -1,9 +1,9 @@
 //! # Real-World Historical RustSec Benchmark: `smallvec` (RUSTSEC-2021-0003 / CVE-2021-25900)
 //!
-//! Self-contained host-compilable reproduction adapted from historical RustSec advisory patterns.
-//! Original Crate: `smallvec` (affected `>= 0.6.3, < 0.6.14`, e.g. v0.6.9)
+//! Self-contained simplified reproduction adapted from the buffer overflow class behind
+//! RUSTSEC-2021-0003 / CVE-2021-25900 in SmallVec::insert_many (used as advisory pattern
+//! inspiration; implemented as an inline 2-element fixed buffer without dynamic heap growth).
 //! Original License: MIT / Apache-2.0 (Dual License)
-//! Original Author: The Servo Project Developers
 //! Advisory: https://rustsec.org/advisories/RUSTSEC-2021-0003.html
 //!
 //! In affected versions of `smallvec`, calling `insert_many` or inserting elements

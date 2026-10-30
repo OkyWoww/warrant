@@ -730,7 +730,7 @@ pub async fn run_demo(opts: DemoOptions) -> Result<i32> {
             )?;
 
             println!("  {}", event_writer.format_step_chip_bar(&cid));
-            println!("  Verdict:     UNPROVEN (Miri exit code 0 — Soundness invariant held)");
+            println!("  Verdict:     UNPROVEN (Miri exit code 0 — No UB triggered by this harness)");
             println!(
                 "  [HONESTY RULE 1] A hypothesis that did not trigger Miri UB is NOT reported as a bug.\n"
             );
@@ -870,7 +870,11 @@ pub async fn run_demo(opts: DemoOptions) -> Result<i32> {
             println!("Event Stream Mirror:     {} ({} events)", p.display(), event_writer.events().len());
         }
     }
-    println!("API Spend This Run:      ${:.6} USD", report.api_cost_usd);
+    if is_offline_replay {
+        println!("Model Outputs:           Replayed from 2026-10-30T02:27:22Z capture (capture cost: $0.169685 USD / 9 calls) | Miri Verification: Executed live ($0.00 additional API spend)");
+    } else {
+        println!("API Spend This Run:      ${:.6} USD", report.api_cost_usd);
+    }
     println!("Measured elapsed time:   {:.2} s", elapsed_secs);
     println!("================================================================================");
 

@@ -2802,15 +2802,15 @@ COST TRACKER & GLOBAL BUDGET LEDGER SUMMARY:
   * T5/T10 Gate 1 Seeded Synthesis (eval_gate1 --backend meta)       | Calls:  9 | In:  6955 | Out: 36956 | Cost: $0.163977
   * T8 Baselines Unverified LLM (eval_baselines --backend meta)      | Calls: 32 | In:  6909 | Out: 26958 | Cost: $0.123208
   * T11 Full Patch Verification Loop (eval_patches --backend meta, 17 targets) | Calls: 17 | In: 26154 | Out: 42869 | Cost: $0.214093
-  * T12 Flagship Demo Live Capture (warrant demo --backend meta-api -> docs/DEMO_CACHE.json) | Calls:  9 | In:  9458 | Out: 36964 | Cost: $0.169685
+  * T12 Flagship Demo Live Capture (warrant demo --backend meta-api -> docs/DEMO_CACHE.json) | Calls:  9 | In:  8896 | Out: 37309 | Cost: $0.169685
   * T13 Multi-Pass Live Benchmark Synthesis (2 passes x 22 frozen bug targets) | Calls: 57 | In: 46420 | Out: 232798 | Cost: $1.038898
   * T13 Live Safe Controls Autonomous Evaluation (16 safe controls, max 4 rounds) | Calls: 63 | In: 56047 | Out: 358536 | Cost: $1.585954
-  * TOTAL LIVE HTTP CALLS: 188 (0 missing usage) | Prompt Tokens: 151959 | Completion Tokens: 735096
+  * TOTAL LIVE HTTP CALLS: 188 (0 missing usage) | Prompt Tokens: 151397 | Completion Tokens: 735441
   * CUMULATIVE API SPEND:  $3.295901 USD (Circuit breaker: $105.00 | Event credit remaining: $146.704099)
   * Official Artifact Written: docs/FINAL_RESULTS.json
 ====================================================================================================================
 ```
-*(Catatan rekonsiliasi: Penjumlahan kolom ke-7 baris eksperimen `1 + 9 + 32 + 17 + 9 + 57 + 63 = 188` panggilan HTTP nyata, `16 + 6.955 + 6.909 + 26.154 + 9.458 + 46.420 + 56.047 = 151.959` prompt tokens, `15 + 36.956 + 26.958 + 42.869 + 36.964 + 232.798 + 358.536 = 735.096` completion tokens, dan total biaya `$3.295901 USD` 100% identik dengan baris TOTAL dan `docs/FINAL_RESULTS.json`).*
+*(Catatan rekonsiliasi: Penjumlahan kolom ke-7 baris eksperimen `1 + 9 + 32 + 17 + 9 + 57 + 63 = 188` panggilan HTTP nyata, `16 + 6.955 + 6.909 + 26.154 + 8.896 + 46.420 + 56.047 = 151.397` prompt tokens, `15 + 36.956 + 26.958 + 42.869 + 37.309 + 232.798 + 358.536 = 735.441` completion tokens, dan total biaya `$3.295901 USD` 100% identik dengan baris TOTAL dan `docs/FINAL_RESULTS.json`).*
 
 ---
 
@@ -2916,22 +2916,23 @@ Autonomous Repair Loop Lift:           +20.46% absolute proof rate gain (valid@1
 Live Model Proof Rate Multi-Run Stats: Mean = 100.00%, Variance = 0.0000, StdDev = 0.0000%
 Live Patch Verification Rate (17/17):  17/17 (100.0%) | 95% CI: [80.49%, 100.00%] (Two-sided 95% CI) / > 83.84% (One-sided 95% lower)
 Live Safe Controls Evaluated (16/16):  0/16 False Proofs (0.00%) | 95% CI: [0.00%, 20.59%] (Two-sided 95% CI) / < 17.07% (One-sided 95% upper)
+*(Catatan Provenance Kontrol `r2_05_safe` & Alignment `r1_06_safe`: Pada evaluasi live awal `r2_05_safe`, `muse-spark-1.3` menemukan data race nyata pada pemanggilan konkuren re-entrant `write_left` [1/16 bug kontrol awal]; setelah ditambahkan atomic claim guard `AtomicBool`, evaluasi ulang bersih 0/16 false proofs dengan total 4 panggilan tetap tercatat utuh. `r1_06_safe` menghabiskan 3 panggilan HTTP nyata, sehingga total panggilan safe controls = 63 calls persis; didokumentasikan di `docs/CHANGES.md`).*
 --------------------------------------------------------------------------------------------------------------------
 COST TRACKER & GLOBAL BUDGET LEDGER SUMMARY:
   * T2 API Smoke Probe (probe)                                       | Calls:  1 | In:    16 | Out:    15 | Cost: $0.000086
   * T5/T10 Gate 1 Seeded Synthesis (eval_gate1 --backend meta)       | Calls:  9 | In:  6955 | Out: 36956 | Cost: $0.163977
   * T8 Baselines Unverified LLM (eval_baselines --backend meta)      | Calls: 32 | In:  6909 | Out: 26958 | Cost: $0.123208
   * T11 Full Patch Verification Loop (eval_patches --backend meta, 17 targets) | Calls: 17 | In: 26154 | Out: 42869 | Cost: $0.214093
-  * T12 Flagship Demo Live Capture (warrant demo --backend meta-api -> docs/DEMO_CACHE.json) | Calls:  9 | In:  9458 | Out: 36964 | Cost: $0.169685
+  * T12 Flagship Demo Live Capture (warrant demo --backend meta-api -> docs/DEMO_CACHE.json) | Calls:  9 | In:  8896 | Out: 37309 | Cost: $0.169685
   * T13 Multi-Pass Live Benchmark Synthesis (2 passes x 22 frozen bug targets) | Calls: 57 | In: 46420 | Out: 232798 | Cost: $1.038898
   * T13 Live Safe Controls Autonomous Evaluation (16 safe controls, max 4 rounds) | Calls: 63 | In: 56047 | Out: 358536 | Cost: $1.585954
-  * TOTAL LIVE HTTP CALLS: 188 (0 missing usage) | Prompt Tokens: 151959 | Completion Tokens: 735096
+  * TOTAL LIVE HTTP CALLS: 188 (0 missing usage) | Prompt Tokens: 151397 | Completion Tokens: 735441
   * CUMULATIVE API SPEND:  $3.295901 USD (Circuit breaker: $105.00 | Event credit remaining: $146.704099)
   * Official Artifact Written: docs/FINAL_RESULTS.json
 ====================================================================================================================
 ```
 
-### 2. Evidence: SmallVec Patch Semantics Without Silent Truncation & Offline Replay Verification
+### 2. Evidence: SmallVec Patch Semantics & Offline Replay Verification
 Command:
 ```powershell
 cargo run --bin warrant -p warrant-cli -- demo --offline
@@ -2969,8 +2970,8 @@ Target File: bench/real_world_demo/smallvec_r1_demo.rs
   Evidence:    target/warrant/demo\c-0001
 
 > [!NOTE]
-> **Catatan Semantik Patch `smallvec_r1_demo` (Early-Return Capacity & Index Guard)**:
-> Patch menambahkan *early-return capacity & index guard* (`if new_len > self.data.len() || index > self.len { return; }`) yang secara deterministik mencegah out-of-bounds pointer write pada buffer inline dan mempertahankan elemen dalam batas kapasitas sesuai uji `sanity_*` di bawah Miri, dengan catatan batasan semantik `PATCH_VERIFIED` didokumentasikan secara transparan di [`docs/LIMITS.md`](file:///c:/Users/ADMIN/Documents/warrant/docs/LIMITS.md).
+> **Catatan Semantik Patch `smallvec_r1_demo` (Batasan Semantik Early-Return Guard)**:
+> Patch menambahkan early-return guard (`if new_len > self.data.len() || index > self.len { return; }`) yang secara deterministik mencegah out-of-bounds pointer write dan lulus uji `sanity_*` di bawah Miri untuk penyisipan dalam kapasitas, namun mengabaikan penyisipan yang melebihi kapasitas inline tanpa mengembalikan sinyal error (perubahan perilaku / batasan semantik `PATCH_VERIFIED`, didokumentasikan secara transparan di [`docs/LIMITS.md`](file:///c:/Users/ADMIN/Documents/warrant/docs/LIMITS.md) §4.10).
 
 --------------------------------------------------------------------------------
 [2/3] Case 2 [R2 Concurrency — Unsynchronized Cell<usize> Sync Impl]
@@ -2983,7 +2984,7 @@ Target File: bench/pairs/r2_01_cell_sync_mutant.rs
 --------------------------------------------------------------------------------
 [3/3] Case 3 [Honest Control — Bounds-Checked Safe Slice Access (UNPROVEN)]
 Target File: bench/pairs/r1_01_slice_get_safe.rs
-  Verdict:     UNPROVEN (Miri exit code 0 — Soundness invariant held)
+  Verdict:     UNPROVEN (Miri exit code 0 — No UB triggered by this harness)
   [HONESTY RULE 1] A hypothesis that did not trigger Miri UB is NOT reported as a bug.
 
 ================================================================================
@@ -2995,10 +2996,26 @@ Unproven Hypotheses:     1 (held back — never reported as a bug without Miri p
 Markdown Audit Report:   target/warrant/demo\warrant_report.md
 Standalone HTML Report:  target/warrant/demo\warrant_report.html
 Event Stream (JSONL):    target/warrant/demo\events.jsonl (33 events)
-API Spend This Run:      $0.000000 USD
+Model Outputs:           Replayed from 2026-10-30T02:27:22Z capture (capture cost: $0.169685 USD / 9 calls) | Miri Verification: Executed live ($0.00 additional API spend)
 Measured elapsed time:   30.53 s
 ================================================================================
 ```
+
+#### Flagship Demo Live API Call Ledger (`docs/DEMO_CACHE.json` — 9 Live HTTP Calls, $0.169685 USD)
+Captured live on `2026-10-30T02:27:22Z` via `warrant demo --backend meta-api` (recorded in `docs/DEMO_CACHE.json` and replacing the initial 5-call snapshot):
+
+| # | Label | Candidate | Model | HTTP Status | Prompt Tokens | Completion Tokens | Latency (ms) | Cost (USD) |
+| :- | :--- | :--- | :--- | :-: | -: | -: | -: | -: |
+| 1 | `hypothesis:c-0001` | `c-0001` (`smallvec`) | `muse-spark-1.3` | 200 OK | 1,056 | 3,090 | 19,262 ms | `$0.014453` |
+| 2 | `repair:c-0001` | `c-0001` (`smallvec`) | `muse-spark-1.3` | 200 OK | 1,304 | 3,696 | 19,844 ms | `$0.017338` |
+| 3 | `repair:c-0001` | `c-0001` (`smallvec`) | `muse-spark-1.3` | 200 OK | 1,291 | 4,478 | 29,177 ms | `$0.020645` |
+| 4 | `patch:c-0001` | `c-0001` (`smallvec`) | `muse-spark-1.3` | 200 OK | 1,181 | 3,677 | 22,061 ms | `$0.017104` |
+| 5 | `hypothesis:c-0002` | `c-0002` (`r2_01_cell_sync`) | `muse-spark-1.3` | 200 OK | 675 | 4,415 | 24,093 ms | `$0.019608` |
+| 6 | `repair:c-0002` | `c-0002` (`r2_01_cell_sync`) | `muse-spark-1.3` | 200 OK | 917 | 5,774 | 28,960 ms | `$0.025686` |
+| 7 | `repair:c-0002` | `c-0002` (`r2_01_cell_sync`) | `muse-spark-1.3` | 200 OK | 914 | 7,157 | 44,049 ms | `$0.031560` |
+| 8 | `patch:c-0002` | `c-0002` (`r2_01_cell_sync`) | `muse-spark-1.3` | 200 OK | 807 | 1,685 | 10,258 ms | `$0.008170` |
+| 9 | `hypothesis:c-0003` | `c-0003` (`r1_01_slice_get_safe`) | `muse-spark-1.3` | 200 OK | 751 | 3,337 | 16,238 ms | `$0.015121` |
+| **Total** | **9 Live Calls** | **3 Demo Cases** | **muse-spark-1.3** | **200 OK** | **9,458** | **36,964** | **Mean: 23,771 ms** | **`$0.169685 USD`** |
 
 ### 3. Evidence: Host Sandbox Honesty Audit
 Exact wording verified across `README.md`, `docs/LIMITS.md`, `docs/DEMO.md`, and `docs/VIDEO_SCRIPT.md`:
