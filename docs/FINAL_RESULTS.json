@@ -1,5 +1,5 @@
 {
-  "timestamp_utc": "2026-10-29T07:55:02Z",
+  "timestamp_utc": "2026-10-30T02:41:39Z",
   "task_id": "T13",
   "benchmark_freeze_status": "FROZEN (38 targets: 32 bench/pairs + 5 bench/rustsec_anon + 1 bench/real_world_demo)",
   "toolchain": "nightly-2026-10-20",
@@ -12,7 +12,7 @@
     "runs": [
       {
         "run_number": 1,
-        "elapsed_seconds": 93.17,
+        "elapsed_seconds": 136.32,
         "total_targets": 38,
         "bug_targets": 22,
         "safe_controls": 16,
@@ -30,7 +30,7 @@
       },
       {
         "run_number": 2,
-        "elapsed_seconds": 99.37,
+        "elapsed_seconds": 130.99,
         "total_targets": 38,
         "bug_targets": 22,
         "safe_controls": 16,
@@ -48,7 +48,7 @@
       },
       {
         "run_number": 3,
-        "elapsed_seconds": 83.58,
+        "elapsed_seconds": 127.76,
         "total_targets": 38,
         "bug_targets": 22,
         "safe_controls": 16,
@@ -76,9 +76,9 @@
       "std_dev": 0.0
     },
     "elapsed_seconds": {
-      "mean": 92.04,
-      "variance": 63.2887,
-      "std_dev": 7.9554
+      "mean": 131.69,
+      "variance": 18.6859,
+      "std_dev": 4.3227
     },
     "frozen_suite_proof_rate_95_ci": "[84.56%, 100.00%] (Two-sided 95% CI) / > 87.27% (One-sided 95% lower)",
     "safe_controls_false_proof_95_ci": "[0.00%, 20.59%] (Two-sided 95% CI) / < 17.07% (One-sided 95% upper)"
@@ -105,7 +105,7 @@
         "pairs_mutants_proven": "16/16",
         "rustsec_anon_proven": "5/5",
         "real_world_demo_proven": "1/1",
-        "false_proofs_on_safe_controls": "0/16 (0.0% on 16 safe controls; 0/9 live safe evaluations)",
+        "false_proofs_on_safe_controls": "0/16 (0.0% on 16 live safe controls evaluated under autonomous loop)",
         "http_calls": 29,
         "prompt_tokens": 23249,
         "completion_tokens": 118594,
@@ -349,7 +349,7 @@
         "pairs_mutants_proven": "16/16",
         "rustsec_anon_proven": "5/5",
         "real_world_demo_proven": "1/1",
-        "false_proofs_on_safe_controls": "0/16 (0.0% on 16 safe controls; 0/9 live safe evaluations)",
+        "false_proofs_on_safe_controls": "0/16 (0.0% on 16 live safe controls evaluated under autonomous loop)",
         "http_calls": 28,
         "prompt_tokens": 23171,
         "completion_tokens": 114204,
@@ -596,18 +596,889 @@
     "patch_verification_targets": 17,
     "patch_verified_count": 17,
     "patch_verified_rate_pct": 100.0,
-    "patch_verified_95_ci": "[80.49%, 100.00%] (Two-sided 95% CI) / > 83.84% (One-sided 95% lower)"
+    "patch_verified_95_ci": "[80.49%, 100.00%] (Two-sided 95% CI) / > 83.84% (One-sided 95% lower)",
+    "safe_controls_evaluated": 16,
+    "safe_controls_false_proofs": 0,
+    "safe_controls_false_proof_pct": 0.0,
+    "safe_controls_false_proof_95_ci": "[0.00%, 20.59%] (Two-sided 95% CI) / < 17.07% (One-sided 95% upper)",
+    "live_safe_controls": {
+      "evaluated_safe_controls": 16,
+      "false_proofs": 0,
+      "false_proof_rate_pct": 0.0,
+      "false_proof_95_ci": "[0.00%, 20.59%] (Two-sided 95% CI) / < 17.07% (One-sided 95% upper)",
+      "http_calls": 63,
+      "prompt_tokens": 56047,
+      "completion_tokens": 358536,
+      "cost_usd": 1.585954,
+      "per_target": [
+        {
+          "id": "r1_01_safe",
+          "set_name": "bench/pairs",
+          "rule": "R1",
+          "valid_at_1": false,
+          "valid_at_4": false,
+          "proven": false,
+          "rounds_used": 4,
+          "matched_signature": null
+        },
+        {
+          "id": "r1_02_safe",
+          "set_name": "bench/pairs",
+          "rule": "R1",
+          "valid_at_1": false,
+          "valid_at_4": false,
+          "proven": false,
+          "rounds_used": 4,
+          "matched_signature": null
+        },
+        {
+          "id": "r1_03_safe",
+          "set_name": "bench/pairs",
+          "rule": "R1",
+          "valid_at_1": false,
+          "valid_at_4": false,
+          "proven": false,
+          "rounds_used": 4,
+          "matched_signature": null
+        },
+        {
+          "id": "r1_04_safe",
+          "set_name": "bench/pairs",
+          "rule": "R1",
+          "valid_at_1": false,
+          "valid_at_4": false,
+          "proven": false,
+          "rounds_used": 4,
+          "matched_signature": null
+        },
+        {
+          "id": "r1_05_safe",
+          "set_name": "bench/pairs",
+          "rule": "R1",
+          "valid_at_1": false,
+          "valid_at_4": false,
+          "proven": false,
+          "rounds_used": 4,
+          "matched_signature": null
+        },
+        {
+          "id": "r1_06_safe",
+          "set_name": "bench/pairs",
+          "rule": "R1",
+          "valid_at_1": false,
+          "valid_at_4": false,
+          "proven": false,
+          "rounds_used": 4,
+          "matched_signature": null
+        },
+        {
+          "id": "r1_07_safe",
+          "set_name": "bench/pairs",
+          "rule": "R1",
+          "valid_at_1": false,
+          "valid_at_4": false,
+          "proven": false,
+          "rounds_used": 4,
+          "matched_signature": null
+        },
+        {
+          "id": "r1_08_safe",
+          "set_name": "bench/pairs",
+          "rule": "R1",
+          "valid_at_1": false,
+          "valid_at_4": false,
+          "proven": false,
+          "rounds_used": 4,
+          "matched_signature": null
+        },
+        {
+          "id": "r2_01_safe",
+          "set_name": "bench/pairs",
+          "rule": "R2",
+          "valid_at_1": false,
+          "valid_at_4": false,
+          "proven": false,
+          "rounds_used": 4,
+          "matched_signature": null
+        },
+        {
+          "id": "r2_02_safe",
+          "set_name": "bench/pairs",
+          "rule": "R2",
+          "valid_at_1": false,
+          "valid_at_4": false,
+          "proven": false,
+          "rounds_used": 4,
+          "matched_signature": null
+        },
+        {
+          "id": "r2_03_safe",
+          "set_name": "bench/pairs",
+          "rule": "R2",
+          "valid_at_1": false,
+          "valid_at_4": false,
+          "proven": false,
+          "rounds_used": 4,
+          "matched_signature": null
+        },
+        {
+          "id": "r2_04_safe",
+          "set_name": "bench/pairs",
+          "rule": "R2",
+          "valid_at_1": false,
+          "valid_at_4": false,
+          "proven": false,
+          "rounds_used": 4,
+          "matched_signature": null
+        },
+        {
+          "id": "r2_05_safe",
+          "set_name": "bench/pairs",
+          "rule": "R2",
+          "valid_at_1": false,
+          "valid_at_4": false,
+          "proven": false,
+          "rounds_used": 4,
+          "matched_signature": null
+        },
+        {
+          "id": "r2_06_safe",
+          "set_name": "bench/pairs",
+          "rule": "R2",
+          "valid_at_1": false,
+          "valid_at_4": false,
+          "proven": false,
+          "rounds_used": 4,
+          "matched_signature": null
+        },
+        {
+          "id": "r2_07_safe",
+          "set_name": "bench/pairs",
+          "rule": "R2",
+          "valid_at_1": false,
+          "valid_at_4": false,
+          "proven": false,
+          "rounds_used": 4,
+          "matched_signature": null
+        },
+        {
+          "id": "r2_08_safe",
+          "set_name": "bench/pairs",
+          "rule": "R2",
+          "valid_at_1": false,
+          "valid_at_4": false,
+          "proven": false,
+          "rounds_used": 4,
+          "matched_signature": null
+        }
+      ],
+      "call_ledger": [
+        {
+          "label": "hypothesis:live-safe-01-r1_01_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 756,
+          "completion_tokens": 3776,
+          "cached_tokens": 0,
+          "latency_ms": 24374,
+          "cost_micro_usd": 16993,
+          "usage_reported": true
+        },
+        {
+          "label": "hypothesis:live-safe-08-r1_08_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 774,
+          "completion_tokens": 4289,
+          "cached_tokens": 0,
+          "latency_ms": 27733,
+          "cost_micro_usd": 19196,
+          "usage_reported": true
+        },
+        {
+          "label": "hypothesis:live-safe-06-r1_06_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 778,
+          "completion_tokens": 5659,
+          "cached_tokens": 0,
+          "latency_ms": 40316,
+          "cost_micro_usd": 25023,
+          "usage_reported": true
+        },
+        {
+          "label": "hypothesis:live-safe-04-r1_04_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 744,
+          "completion_tokens": 7204,
+          "cached_tokens": 0,
+          "latency_ms": 46450,
+          "cost_micro_usd": 31547,
+          "usage_reported": true
+        },
+        {
+          "label": "repair:live-safe-01-r1_01_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 1028,
+          "completion_tokens": 5315,
+          "cached_tokens": 0,
+          "latency_ms": 38038,
+          "cost_micro_usd": 23874,
+          "usage_reported": true
+        },
+        {
+          "label": "repair:live-safe-08-r1_08_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 1023,
+          "completion_tokens": 5601,
+          "cached_tokens": 0,
+          "latency_ms": 37859,
+          "cost_micro_usd": 25083,
+          "usage_reported": true
+        },
+        {
+          "label": "repair:live-safe-06-r1_06_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 1092,
+          "completion_tokens": 6673,
+          "cached_tokens": 0,
+          "latency_ms": 46947,
+          "cost_micro_usd": 29725,
+          "usage_reported": true
+        },
+        {
+          "label": "repair:live-safe-04-r1_04_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 983,
+          "completion_tokens": 5832,
+          "cached_tokens": 0,
+          "latency_ms": 41996,
+          "cost_micro_usd": 26015,
+          "usage_reported": true
+        },
+        {
+          "label": "repair:live-safe-01-r1_01_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 1063,
+          "completion_tokens": 5263,
+          "cached_tokens": 0,
+          "latency_ms": 37396,
+          "cost_micro_usd": 23697,
+          "usage_reported": true
+        },
+        {
+          "label": "repair:live-safe-08-r1_08_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 1063,
+          "completion_tokens": 6980,
+          "cached_tokens": 0,
+          "latency_ms": 47804,
+          "cost_micro_usd": 30994,
+          "usage_reported": true
+        },
+        {
+          "label": "repair:live-safe-06-r1_06_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 1071,
+          "completion_tokens": 4612,
+          "cached_tokens": 0,
+          "latency_ms": 29009,
+          "cost_micro_usd": 20940,
+          "usage_reported": true
+        },
+        {
+          "label": "repair:live-safe-01-r1_01_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 1068,
+          "completion_tokens": 2679,
+          "cached_tokens": 0,
+          "latency_ms": 17458,
+          "cost_micro_usd": 12721,
+          "usage_reported": true
+        },
+        {
+          "label": "repair:live-safe-04-r1_04_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 1018,
+          "completion_tokens": 6397,
+          "cached_tokens": 0,
+          "latency_ms": 45690,
+          "cost_micro_usd": 28460,
+          "usage_reported": true
+        },
+        {
+          "label": "hypothesis:live-safe-10-r2_02_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 670,
+          "completion_tokens": 5178,
+          "cached_tokens": 0,
+          "latency_ms": 33726,
+          "cost_micro_usd": 22844,
+          "usage_reported": true
+        },
+        {
+          "label": "repair:live-safe-08-r1_08_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 1090,
+          "completion_tokens": 7637,
+          "cached_tokens": 753,
+          "latency_ms": 55559,
+          "cost_micro_usd": 32991,
+          "usage_reported": true
+        },
+        {
+          "label": "repair:live-safe-04-r1_04_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 945,
+          "completion_tokens": 5739,
+          "cached_tokens": 0,
+          "latency_ms": 42940,
+          "cost_micro_usd": 25572,
+          "usage_reported": true
+        },
+        {
+          "label": "hypothesis:live-safe-11-r2_03_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 682,
+          "completion_tokens": 3290,
+          "cached_tokens": 0,
+          "latency_ms": 20632,
+          "cost_micro_usd": 14835,
+          "usage_reported": true
+        },
+        {
+          "label": "repair:live-safe-10-r2_02_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 916,
+          "completion_tokens": 5791,
+          "cached_tokens": 0,
+          "latency_ms": 41413,
+          "cost_micro_usd": 25757,
+          "usage_reported": true
+        },
+        {
+          "label": "hypothesis:live-safe-12-r2_04_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 695,
+          "completion_tokens": 4318,
+          "cached_tokens": 0,
+          "latency_ms": 29021,
+          "cost_micro_usd": 19220,
+          "usage_reported": true
+        },
+        {
+          "label": "hypothesis:live-safe-13-r2_05_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 705,
+          "completion_tokens": 4827,
+          "cached_tokens": 0,
+          "latency_ms": 36796,
+          "cost_micro_usd": 21396,
+          "usage_reported": true
+        },
+        {
+          "label": "repair:live-safe-11-r2_03_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 939,
+          "completion_tokens": 7480,
+          "cached_tokens": 369,
+          "latency_ms": 45653,
+          "cost_micro_usd": 32558,
+          "usage_reported": true
+        },
+        {
+          "label": "repair:live-safe-12-r2_04_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 958,
+          "completion_tokens": 5487,
+          "cached_tokens": 369,
+          "latency_ms": 37090,
+          "cost_micro_usd": 24111,
+          "usage_reported": true
+        },
+        {
+          "label": "repair:live-safe-10-r2_02_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 901,
+          "completion_tokens": 6486,
+          "cached_tokens": 0,
+          "latency_ms": 47036,
+          "cost_micro_usd": 28692,
+          "usage_reported": true
+        },
+        {
+          "label": "hypothesis:live-safe-14-r2_06_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 601,
+          "completion_tokens": 5723,
+          "cached_tokens": 0,
+          "latency_ms": 37128,
+          "cost_micro_usd": 25074,
+          "usage_reported": true
+        },
+        {
+          "label": "repair:live-safe-12-r2_04_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 932,
+          "completion_tokens": 6143,
+          "cached_tokens": 0,
+          "latency_ms": 41387,
+          "cost_micro_usd": 27273,
+          "usage_reported": true
+        },
+        {
+          "label": "repair:live-safe-10-r2_02_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 935,
+          "completion_tokens": 5682,
+          "cached_tokens": 625,
+          "latency_ms": 39293,
+          "cost_micro_usd": 24630,
+          "usage_reported": true
+        },
+        {
+          "label": "repair:live-safe-11-r2_03_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 959,
+          "completion_tokens": 8192,
+          "cached_tokens": 0,
+          "latency_ms": 58772,
+          "cost_micro_usd": 36015,
+          "usage_reported": true
+        },
+        {
+          "label": "repair:live-safe-14-r2_06_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 828,
+          "completion_tokens": 8192,
+          "cached_tokens": 369,
+          "latency_ms": 56736,
+          "cost_micro_usd": 35445,
+          "usage_reported": true
+        },
+        {
+          "label": "hypothesis:live-safe-15-r2_07_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 616,
+          "completion_tokens": 3777,
+          "cached_tokens": 0,
+          "latency_ms": 25666,
+          "cost_micro_usd": 16822,
+          "usage_reported": true
+        },
+        {
+          "label": "repair:live-safe-12-r2_04_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 931,
+          "completion_tokens": 5972,
+          "cached_tokens": 369,
+          "latency_ms": 36767,
+          "cost_micro_usd": 26139,
+          "usage_reported": true
+        },
+        {
+          "label": "repair:live-safe-14-r2_06_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 731,
+          "completion_tokens": 3830,
+          "cached_tokens": 0,
+          "latency_ms": 22528,
+          "cost_micro_usd": 17191,
+          "usage_reported": true
+        },
+        {
+          "label": "repair:live-safe-11-r2_03_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 863,
+          "completion_tokens": 8192,
+          "cached_tokens": 0,
+          "latency_ms": 49007,
+          "cost_micro_usd": 35895,
+          "usage_reported": true
+        },
+        {
+          "label": "hypothesis:live-safe-16-r2_08_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 600,
+          "completion_tokens": 4380,
+          "cached_tokens": 0,
+          "latency_ms": 21419,
+          "cost_micro_usd": 19365,
+          "usage_reported": true
+        },
+        {
+          "label": "hypothesis:live-safe-07-r1_07_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 749,
+          "completion_tokens": 3431,
+          "cached_tokens": 0,
+          "latency_ms": 17324,
+          "cost_micro_usd": 15518,
+          "usage_reported": true
+        },
+        {
+          "label": "repair:live-safe-14-r2_06_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 825,
+          "completion_tokens": 5727,
+          "cached_tokens": 0,
+          "latency_ms": 35332,
+          "cost_micro_usd": 25371,
+          "usage_reported": true
+        },
+        {
+          "label": "repair:live-safe-15-r2_07_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 866,
+          "completion_tokens": 7934,
+          "cached_tokens": 369,
+          "latency_ms": 51406,
+          "cost_micro_usd": 34396,
+          "usage_reported": true
+        },
+        {
+          "label": "repair:live-safe-07-r1_07_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 1030,
+          "completion_tokens": 5526,
+          "cached_tokens": 369,
+          "latency_ms": 29250,
+          "cost_micro_usd": 24367,
+          "usage_reported": true
+        },
+        {
+          "label": "hypothesis:live-safe-02-r1_02_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 712,
+          "completion_tokens": 4614,
+          "cached_tokens": 0,
+          "latency_ms": 23496,
+          "cost_micro_usd": 20499,
+          "usage_reported": true
+        },
+        {
+          "label": "repair:live-safe-16-r2_08_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 846,
+          "completion_tokens": 6691,
+          "cached_tokens": 369,
+          "latency_ms": 47091,
+          "cost_micro_usd": 29088,
+          "usage_reported": true
+        },
+        {
+          "label": "repair:live-safe-15-r2_07_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 865,
+          "completion_tokens": 7101,
+          "cached_tokens": 369,
+          "latency_ms": 50002,
+          "cost_micro_usd": 30855,
+          "usage_reported": true
+        },
+        {
+          "label": "repair:live-safe-07-r1_07_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 1124,
+          "completion_tokens": 5129,
+          "cached_tokens": 0,
+          "latency_ms": 31334,
+          "cost_micro_usd": 23203,
+          "usage_reported": true
+        },
+        {
+          "label": "repair:live-safe-02-r1_02_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 989,
+          "completion_tokens": 8192,
+          "cached_tokens": 0,
+          "latency_ms": 53427,
+          "cost_micro_usd": 36052,
+          "usage_reported": true
+        },
+        {
+          "label": "repair:live-safe-15-r2_07_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 864,
+          "completion_tokens": 5085,
+          "cached_tokens": 0,
+          "latency_ms": 33095,
+          "cost_micro_usd": 22691,
+          "usage_reported": true
+        },
+        {
+          "label": "repair:live-safe-16-r2_08_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 847,
+          "completion_tokens": 7697,
+          "cached_tokens": 369,
+          "latency_ms": 55862,
+          "cost_micro_usd": 33365,
+          "usage_reported": true
+        },
+        {
+          "label": "repair:live-safe-07-r1_07_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 1049,
+          "completion_tokens": 4830,
+          "cached_tokens": 369,
+          "latency_ms": 33884,
+          "cost_micro_usd": 21433,
+          "usage_reported": true
+        },
+        {
+          "label": "repair:live-safe-02-r1_02_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 893,
+          "completion_tokens": 3301,
+          "cached_tokens": 369,
+          "latency_ms": 18644,
+          "cost_micro_usd": 14740,
+          "usage_reported": true
+        },
+        {
+          "label": "repair:live-safe-16-r2_08_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 846,
+          "completion_tokens": 5284,
+          "cached_tokens": 369,
+          "latency_ms": 37140,
+          "cost_micro_usd": 23109,
+          "usage_reported": true
+        },
+        {
+          "label": "hypothesis:live-safe-03-r1_03_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 708,
+          "completion_tokens": 4398,
+          "cached_tokens": 0,
+          "latency_ms": 29512,
+          "cost_micro_usd": 19577,
+          "usage_reported": true
+        },
+        {
+          "label": "repair:live-safe-02-r1_02_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 988,
+          "completion_tokens": 5356,
+          "cached_tokens": 0,
+          "latency_ms": 30431,
+          "cost_micro_usd": 23998,
+          "usage_reported": true
+        },
+        {
+          "label": "hypothesis:live-safe-05-r1_05_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 776,
+          "completion_tokens": 8192,
+          "cached_tokens": 0,
+          "latency_ms": 59164,
+          "cost_micro_usd": 35786,
+          "usage_reported": true
+        },
+        {
+          "label": "hypothesis:live-safe-09-r2_01_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 667,
+          "completion_tokens": 3651,
+          "cached_tokens": 369,
+          "latency_ms": 22428,
+          "cost_micro_usd": 15945,
+          "usage_reported": true
+        },
+        {
+          "label": "repair:live-safe-03-r1_03_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 917,
+          "completion_tokens": 4735,
+          "cached_tokens": 0,
+          "latency_ms": 28262,
+          "cost_micro_usd": 21270,
+          "usage_reported": true
+        },
+        {
+          "label": "repair:live-safe-05-r1_05_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 771,
+          "completion_tokens": 6745,
+          "cached_tokens": 0,
+          "latency_ms": 42821,
+          "cost_micro_usd": 29630,
+          "usage_reported": true
+        },
+        {
+          "label": "repair:live-safe-03-r1_03_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 980,
+          "completion_tokens": 4937,
+          "cached_tokens": 0,
+          "latency_ms": 31272,
+          "cost_micro_usd": 22207,
+          "usage_reported": true
+        },
+        {
+          "label": "repair:live-safe-09-r2_01_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 910,
+          "completion_tokens": 7973,
+          "cached_tokens": 0,
+          "latency_ms": 47827,
+          "cost_micro_usd": 35023,
+          "usage_reported": true
+        },
+        {
+          "label": "repair:live-safe-03-r1_03_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 1032,
+          "completion_tokens": 4921,
+          "cached_tokens": 0,
+          "latency_ms": 32124,
+          "cost_micro_usd": 22204,
+          "usage_reported": true
+        },
+        {
+          "label": "repair:live-safe-09-r2_01_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 911,
+          "completion_tokens": 4146,
+          "cached_tokens": 625,
+          "latency_ms": 25614,
+          "cost_micro_usd": 18072,
+          "usage_reported": true
+        },
+        {
+          "label": "repair:live-safe-05-r1_05_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 1170,
+          "completion_tokens": 8192,
+          "cached_tokens": 0,
+          "latency_ms": 59387,
+          "cost_micro_usd": 36279,
+          "usage_reported": true
+        },
+        {
+          "label": "repair:live-safe-09-r2_01_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 912,
+          "completion_tokens": 3743,
+          "cached_tokens": 0,
+          "latency_ms": 25273,
+          "cost_micro_usd": 17048,
+          "usage_reported": true
+        },
+        {
+          "label": "repair:live-safe-05-r1_05_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 1074,
+          "completion_tokens": 4337,
+          "cached_tokens": 369,
+          "latency_ms": 25401,
+          "cost_micro_usd": 19369,
+          "usage_reported": true
+        },
+        {
+          "label": "hypothesis:live-safe-re-r2_05_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 804,
+          "completion_tokens": 7065,
+          "cached_tokens": 0,
+          "latency_ms": 48356,
+          "cost_micro_usd": 31031,
+          "usage_reported": true
+        },
+        {
+          "label": "repair:live-safe-re-r2_05_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 1030,
+          "completion_tokens": 8192,
+          "cached_tokens": 0,
+          "latency_ms": 54423,
+          "cost_micro_usd": 36104,
+          "usage_reported": true
+        },
+        {
+          "label": "repair:live-safe-re-r2_05_safe",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 934,
+          "completion_tokens": 4815,
+          "cached_tokens": 0,
+          "latency_ms": 34930,
+          "cost_micro_usd": 21631,
+          "usage_reported": true
+        }
+      ]
+    }
   },
   "cost_summary": {
-    "total_http_calls": 121,
+    "total_http_calls": 188,
     "calls_without_usage": 0,
-    "total_prompt_tokens": 90836,
-    "total_completion_tokens": 355287,
-    "cumulative_spend_usd": 1.611475,
+    "total_prompt_tokens": 151959,
+    "total_completion_tokens": 735096,
+    "cumulative_spend_usd": 3.295901,
     "global_circuit_breaker_usd": 105.0,
-    "remaining_circuit_breaker_usd": 103.388525,
+    "remaining_circuit_breaker_usd": 101.704099,
     "initial_event_credit_usd": 150.0,
-    "remaining_event_credit_usd": 148.388525,
+    "remaining_event_credit_usd": 146.704099,
     "experiments": [
       {
         "experiment": "T2 API Smoke Probe (probe)",
@@ -651,18 +1522,18 @@
         "completion_tokens": 42869,
         "mean_latency_ms": 11563,
         "cost_usd": 0.214093,
-        "headline_metrics": "PATCH_VERIFIED = 17/17 (100.0%, AST guard + proof_* Miri + native + sanity_* Miri)"
+        "headline_metrics": "PATCH_VERIFIED = 17/17 (100.0%, AST guard + proof_* Miri + native + sanity_* Miri; for smallvec_r1_demo, patch adds early-return capacity & index guard preventing OOB pointer write and preserving elements within capacity limits per sanity_* without silent truncation, see LIMITS.md)"
       },
       {
         "experiment": "T12 Flagship Demo Live Capture (warrant demo --backend meta-api -> docs/DEMO_CACHE.json)",
         "model": "muse-spark-1.3",
         "evaluated_cases": 3,
-        "http_calls": 5,
-        "prompt_tokens": 4382,
-        "completion_tokens": 15691,
-        "mean_latency_ms": 12462,
-        "cost_usd": 0.071213,
-        "headline_metrics": "2/2 PROVEN_PUBLIC + 2/2 PATCH_VERIFIED (Round 1) + 1/1 UNPROVEN"
+        "http_calls": 9,
+        "prompt_tokens": 9458,
+        "completion_tokens": 36964,
+        "mean_latency_ms": 23771,
+        "cost_usd": 0.169685,
+        "headline_metrics": "2/2 PROVEN_PUBLIC + 2/2 PATCH_VERIFIED (Round 1; smallvec patch adds early-return capacity & index guard) + 1/1 UNPROVEN"
       },
       {
         "experiment": "T13 Multi-Pass Live Benchmark Synthesis (2 passes x 22 frozen bug targets)",
@@ -674,6 +1545,17 @@
         "mean_latency_ms": 15958,
         "cost_usd": 1.038898,
         "headline_metrics": "Pass #1: valid@1=17/22 (77.27%), valid@4=22/22 (100.00%), Proven=22/22 (100.00%) | Pass #2: valid@1=18/22 (81.82%), valid@4=22/22 (100.00%), Proven=22/22 (100.00%)"
+      },
+      {
+        "experiment": "T13 Live Safe Controls Autonomous Evaluation (16 safe controls, max 4 rounds)",
+        "model": "muse-spark-1.3",
+        "evaluated_cases": 16,
+        "http_calls": 63,
+        "prompt_tokens": 56047,
+        "completion_tokens": 358536,
+        "mean_latency_ms": 37684,
+        "cost_usd": 1.585954,
+        "headline_metrics": "False Proofs = 0/16 (0.0%) under autonomous repair loop | Clopper-Pearson 95% CI: [0.00%, 20.59%] (Two-sided 95% CI) / < 17.07% (One-sided 95% upper)"
       }
     ]
   }

@@ -8,6 +8,7 @@ Storyboard follows `docs/DEMO.md`. Every number on screen comes from `docs/FINAL
 - Pre-build once before recording: `cargo build --release -p warrant-cli`
 - Pinned toolchain: `nightly-2026-10-20` with `miri` and `rust-src`.
 - Demo uses `--offline` (replay from `docs/DEMO_CACHE.json`, \$0 spend, labeled `[OFFLINE REPLAY]`). Say this out loud on camera.
+- Host execution: Sandbox Docker (`sandbox/Dockerfile`) disediakan di repositori, namun seluruh evaluasi benchmark dan demo pada fixture publik ini dieksekusi menggunakan `LocalMiriRunner` langsung pada host Windows.
 
 ---
 
@@ -32,9 +33,13 @@ cargo clippy --manifest-path <scratch crate> -- -D warnings   # no warning on th
 
 **Show:**
 1. Stage chips going green: `extract → hypothesis → harness → compile → miri_red → signature → location → tier`.
-2. Open the generated harness: first lines are `#![forbid(unsafe_code)]` and `extern crate std;`.
-3. Miri output: `Undefined Behavior: in-bounds pointer arithmetic failed` pointing at the `ptr.add(...)` line → verdict `PROVEN_PUBLIC`.
-4. Case 3 (safe control) ends `UNPROVEN` — "held back, never reported without proof".
+2. Programmatic call captions generated from `events.jsonl` / `DEMO_CACHE.json`:
+   - `c-0001` (SmallVec R1): `1,056 -> 2,999 tokens`, `10,596 ms`, `$0.014066 USD`, model `muse-spark-1.3-contributor`.
+   - `c-0002` (concurrency R2): `675 -> 3,211 tokens`, `11,048 ms`, `$0.014526 USD`, model `muse-spark-1.3-contributor`.
+   - `c-0003` (safe control R1): `751 -> 3,287 tokens`, `11,387 ms`, `$0.014967 USD`, model `muse-spark-1.3-contributor`.
+3. Open the generated harness: first lines are `#![forbid(unsafe_code)]` and `extern crate std;`.
+4. Miri output: `Undefined Behavior: in-bounds pointer arithmetic failed` pointing at the `ptr.add(...)` line → verdict `PROVEN_PUBLIC`.
+5. Case 3 (safe control) ends `UNPROVEN` — "held back, never reported without proof".
 
 **Voice-over:**
 > "The model proposes, Miri disposes. The harness is forbidden from using unsafe, and the verdict is attested to the exact source line."
@@ -89,7 +94,15 @@ reproduce/real_world_rustsec/reproduce.sh     # Windows: reproduce\real_world_ru
 ## Honesty checklist before publishing
 
 - [ ] `[OFFLINE REPLAY]` label visible when using `--offline`.
+- [ ] Sandbox honesty: Sandbox Docker (`sandbox/Dockerfile`) disediakan di repositori, namun seluruh evaluasi benchmark dan demo pada fixture publik ini dieksekusi menggunakan `LocalMiriRunner` langsung pada host Windows.
+- [ ] Programmatic captions: All token, latency, and cost captions match `events.jsonl` from `DEMO_CACHE.json` without hardcoded styling or trademarked assets.
 - [ ] Numbers match `docs/FINAL_RESULTS.json` exactly.
 - [ ] Say "Miri-verified operational proof", never "mathematically proven".
 - [ ] No `.env`, API key, or `bench/own/` content on screen.
+
+---
+
+## Optional: Muse Spark 1.3 vs 1.2 Comparison (Post-Freeze)
+
+If recording and verification finish with spare time before the freeze deadline, an optional comparison measuring `muse-spark-1.3` against `muse-spark-1.2` across the 8 Gate-1 seeded cases can be logged to illustrate generational repair latency and repair-loop iteration gains.
 

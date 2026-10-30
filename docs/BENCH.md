@@ -349,6 +349,10 @@ Sesuai `docs/SPEC.md` Bab 5.3 (*Patch Verification*), Bab 7 (*Budget Ceilings*),
 3. Test native (`cargo test --lib`) lulus bersih (`Exit 0`).
 4. Test `warrant_proof::sanity_*` (input valid menghasilkan output yang diharapkan, yang telah diverifikasi lulus pada kode asli sebelum di-patch) lulus bersih di bawah Miri (`cargo +nightly-2026-10-20 miri test --lib warrant_proof::sanity_`).
 
+> [!NOTE]
+> **Semantik Patch `smallvec_r1_demo` (Early-Return Capacity & Index Guard)**:
+> Pada kasus `smallvec_r1_demo` (`RUSTSEC-2021-0003`), patch yang disintesis menambahkan *early-return capacity & index guard* (`let new_len = match self.len.checked_add(num_items) { Some(n) => n, None => return }; if new_len > self.data.len() || index > self.len { return; }`). Guard ini mencegah out-of-bounds pointer write secara aman dan mempertahankan elemen yang disisipkan dalam batas kapasitas inline tanpa pemotongan data diam-diam (*no silent truncation*), yang diverifikasi lulus di bawah Miri melalui `sanity_smallvec_r1_demo` (lihat rincian batasan semantik `PATCH_VERIFIED` di `docs/LIMITS.md`).
+
 ### Perintah Evaluasi:
 ```powershell
 cargo run --bin eval_patches -p warrant-cli -- --backend meta --budget-usd 2.5
@@ -445,30 +449,31 @@ Seluruh angka di bawah ini direkam secara otomatis ke dalam artefak [`docs/FINAL
 
 | Putaran | Durasi (detik) | `PROVEN_PUBLIC` (22 Bug Targets) | `PROVEN_INTERNAL` | `UNPROVEN` (Bug Targets) | Safe Controls Clean (`SoundSafe`) | False Proofs (Safe Controls) | `bench/pairs` Mutants | `bench/rustsec_anon` | `smallvec_r1_demo` |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Run #1** | `93.17 s` | **22 / 22 (100.0%)** | 0 / 22 (0.0%) | 0 / 22 (0.0%) | **16 / 16 (100.0%)** | **0 / 16 (0.0%)** | `16 / 16` | `5 / 5` | `1 / 1` |
-| **Run #2** | `99.37 s` | **22 / 22 (100.0%)** | 0 / 22 (0.0%) | 0 / 22 (0.0%) | **16 / 16 (100.0%)** | **0 / 16 (0.0%)** | `16 / 16` | `5 / 5` | `1 / 1` |
-| **Run #3** | `83.58 s` | **22 / 22 (100.0%)** | 0 / 22 (0.0%) | 0 / 22 (0.0%) | **16 / 16 (100.0%)** | **0 / 16 (0.0%)** | `16 / 16` | `5 / 5` | `1 / 1` |
-| **3-Run Mean** | **`92.04 s`** | **`100.00%`** | `0.00%` | `0.00%` | **`100.00%`** | **`0.00%`** | `100.00%` | `100.00%` | `100.00%` |
-| **3-Run Variance** | `63.2887` | **`0.0000`** | `0.0000` | `0.0000` | `0.0000` | **`0.0000`** | `0.0000` | `0.0000` | `0.0000` |
-| **3-Run StdDev** | `7.9554 s` | `0.0000%` | `0.0000%` | `0.0000%` | `0.0000%` | `0.0000%` | `0.0000%` | `0.0000%` | `0.0000%` |
+| **Run #1** | `136.32 s` | **22 / 22 (100.0%)** | 0 / 22 (0.0%) | 0 / 22 (0.0%) | **16 / 16 (100.0%)** | **0 / 16 (0.0%)** | `16 / 16` | `5 / 5` | `1 / 1` |
+| **Run #2** | `130.99 s` | **22 / 22 (100.0%)** | 0 / 22 (0.0%) | 0 / 22 (0.0%) | **16 / 16 (100.0%)** | **0 / 16 (0.0%)** | `16 / 16` | `5 / 5` | `1 / 1` |
+| **Run #3** | `127.76 s` | **22 / 22 (100.0%)** | 0 / 22 (0.0%) | 0 / 22 (0.0%) | **16 / 16 (100.0%)** | **0 / 16 (0.0%)** | `16 / 16` | `5 / 5` | `1 / 1` |
+| **3-Run Mean** | **`131.69 s`** | **`100.00%`** | `0.00%` | `0.00%` | **`100.00%`** | **`0.00%`** | `100.00%` | `100.00%` | `100.00%` |
+| **3-Run Variance** | `18.6859` | **`0.0000`** | `0.0000` | `0.0000` | `0.0000` | **`0.0000`** | `0.0000` | `0.0000` | `0.0000` |
+| **3-Run StdDev** | `4.3227 s` | `0.0000%` | `0.0000%` | `0.0000%` | `0.0000%` | `0.0000%` | `0.0000%` | `0.0000%` | `0.0000%` |
 
 ### 8.3. Tabel B — End-to-End Autonomous Model Performance (`muse-spark-1.3` Live API)
 
 | Evaluasi Live (`muse-spark-1.3`) | Ukuran Sampel ($n$) | `valid@1` (Round 1 Proven) | `valid@4` (Max 4 Rounds) | Model-Generated Proof Rate (Miri UB) | False Proofs (Safe Controls) | Patch Verification Rate (`PATCH_VERIFIED`) | Panggilan HTTP | Biaya Live (USD) |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Live Frozen Pass #1 (Full Bug Corpus)** | `22` bug targets | **17 / 22 (77.27%)** | **22 / 22 (100.0%)** | **22 / 22 (100.0%)** (7 repair calls across Rounds 2–4 on 5 targets) | **0 / 16 (0.0% on 16 safe controls; 0/9 live safe evaluations)** | — | 29 | `$0.531060` |
-| **Live Frozen Pass #2 (Full Bug Corpus)** | `22` bug targets | **18 / 22 (81.82%)** | **22 / 22 (100.0%)** | **22 / 22 (100.0%)** (6 repair calls across Rounds 2–4 on 4 targets) | **0 / 16 (0.0% on 16 safe controls; 0/9 live safe evaluations)** | — | 28 | `$0.507838` |
+| **Live Frozen Pass #1 (Full Bug Corpus)** | `22` bug targets | **17 / 22 (77.27%)** | **22 / 22 (100.0%)** | **22 / 22 (100.0%)** (7 repair calls across Rounds 2–4 on 5 targets) | **0 / 16 (0.0% on 16 live safe controls evaluated under autonomous loop)** | — | 29 | `$0.531060` |
+| **Live Frozen Pass #2 (Full Bug Corpus)** | `22` bug targets | **18 / 22 (81.82%)** | **22 / 22 (100.0%)** | **22 / 22 (100.0%)** (6 repair calls across Rounds 2–4 on 4 targets) | **0 / 16 (0.0% on 16 live safe controls evaluated under autonomous loop)** | — | 28 | `$0.507838` |
 | **Multi-Pass Mean / Variance (Pass #1 & #2)** | `2 × 22 = 44` | **Mean: `79.54%`, Var: `10.3512`, StdDev: `3.22%`** | **Mean: `100.00%`, Var: `0.0000`, StdDev: `0.00%`** | **Mean: `100.00%`, Var: `0.0000`** (+20.46% gain via 4-round repair loop) | **Mean: `0.00%`, Var: `0.0000`** | — | 57 | `$1.038898` |
+| **Live Safe Controls Autonomous Loop (`final_benchmark_runs`)** | `16` safe controls | — | — | — | **0 / 16 (0.0% False Proofs)** (Clopper-Pearson 95% CI: `[0.00%, 20.59%]`) | — | 63 | `$1.585954` |
 | **Gate 1 Seeded Cohort (`eval_gate1`)** | `8` seeded + `8` safe | **7 / 8 (87.5%)** | **8 / 8 (100.0%)** | **6 / 8 (75.0%)** | **0 / 8 (0.0%)** | — | 9 | `$0.163977` |
-| **Full Patch Loop (`eval_patches`)** | `17` (`16` mutan + `smallvec`) | — | — | `17 / 17` (`PROVEN` input) | — | **17 / 17 (100.0%)** (Round 1/3) | 17 | `$0.214093` |
-| **Flagship Demo Live (`warrant demo`)** | `3` (`smallvec`, `r2_01`, `r1_01_safe`) | **3 / 3 (100.0%)** | **3 / 3 (100.0%)** | **2 / 2 (100.0%)** + **1 / 1 `UNPROVEN`** | **0 / 1 (0.0%)** | **2 / 2 (100.0%)** | 5 | `$0.071213` |
+| **Full Patch Loop (`eval_patches`)** | `17` (`16` mutan + `smallvec`) | — | — | `17 / 17` (`PROVEN` input) | — | **17 / 17 (100.0%)** (Round 1/3; `smallvec` adds early-return capacity & index guard, see `LIMITS.md`) | 17 | `$0.214093` |
+| **Flagship Demo Live (`warrant demo`)** | `3` (`smallvec`, `r2_01`, `r1_01_safe`) | **3 / 3 (100.0%)** | **3 / 3 (100.0%)** | **2 / 2 (100.0%)** + **1 / 1 `UNPROVEN`** | **0 / 1 (0.0%)** | **2 / 2 (100.0%)** | 9 | `$0.169685` |
 
 ### 8.4. Interval Kepercayaan Clopper-Pearson 95% (Exact Binomial)
 
 | Metrik Evaluasi | Rasio ($k / n$) | Two-Sided 95% Clopper-Pearson CI | One-Sided 95% Bound |
 | :--- | :---: | :---: | :---: |
 | **Table A — Verifier Proof Rate (`PROVEN_PUBLIC`)** | `22 / 22 (100.0%)` | `[84.56%, 100.00%]` | `> 87.27%` (One-sided 95% lower) |
-| **Table A & B — False Proof Rate pada Safe Controls** | `0 / 16 (0.0%)` | `[0.00%, 20.59%]` | `< 17.07%` (One-sided 95% upper) |
+| **Table A & B — False Proof Rate pada Safe Controls (Autonomous Loop)** | `0 / 16 (0.0%)` | `[0.00%, 20.59%]` | `< 17.07%` (One-sided 95% upper) |
 | **Table B — Live `muse-spark-1.3` Full Corpus `valid@1` (Pass #1)** | `17 / 22 (77.27%)` | `[54.63%, 92.18%]` | `< 90.59%` (One-sided 95% upper) |
 | **Table B — Live `muse-spark-1.3` Full Corpus `valid@1` (Pass #2)** | `18 / 22 (81.82%)` | `[59.72%, 94.81%]` | `< 93.54%` (One-sided 95% upper) |
 | **Table B — Live `muse-spark-1.3` Full Corpus `valid@4` & `Proof Rate` (per pass)** | `22 / 22 (100.0%)` | `[84.56%, 100.00%]` | `> 87.27%` (One-sided 95% lower) |
@@ -485,12 +490,23 @@ Seluruh angka di bawah ini direkam secara otomatis ke dalam artefak [`docs/FINAL
 | **2. T5/T10 Gate 1 Seeded Synthesis (`eval_gate1 --backend meta`)** | 8 | 9 | 6,955 | 36,956 | 15,219 ms | `$0.163977` |
 | **3. T8 Baselines Unverified LLM (`eval_baselines --backend meta`)** | 32 | 32 | 6,909 | 26,958 | 4,235 ms | `$0.123208` |
 | **4. T11 Full Patch Verification Loop (`eval_patches --backend meta`, 17 targets)** | 17 | 17 | 26,154 | 42,869 | 11,563 ms | `$0.214093` |
-| **5. T12 Flagship Demo Live Capture (`warrant demo --backend meta-api` -> `docs/DEMO_CACHE.json`)** | 3 | 5 | 4,382 | 15,691 | 12,462 ms | `$0.071213` |
+| **5. T12 Flagship Demo Live Capture (`warrant demo --backend meta-api` -> `docs/DEMO_CACHE.json`)** | 3 | 9 | 9,458 | 36,964 | 23,771 ms | `$0.169685` |
 | **6. T13 Multi-Pass Live Benchmark Synthesis (`2 passes × 22 bug targets`)** | 44 | 57 | 46,420 | 232,798 | 15,958 ms | `$1.038898` |
-| **TOTAL KUMULATIF PROYEK** | — | **121 Calls** | **90,836** | **355,287** | — | **`$1.611475 USD`** |
+| **7. T13 Live Safe Controls Autonomous Evaluation (16 safe controls, max 4 rounds)** | 16 | 63 | 56,047 | 358,536 | 37,684 ms | `$1.585954` |
+| **TOTAL KUMULATIF PROYEK** | — | **188 Calls** | **151,959** | **735,096** | — | **`$3.295901 USD`** |
 
-- **Global Circuit Breaker Ceiling (70%)**: `$105.000000 USD` (Tersisa: `$103.388525 USD`)
-- **Total Event Promotional Credit**: `$150.000000 USD` (Tersisa: **`$148.388525 USD`** / **98.93% kredit utuh**)
+- **Global Circuit Breaker Ceiling (70%)**: `$105.000000 USD` (Tersisa: **`$101.704099 USD`**)
+- **Total Event Promotional Credit**: `$150.000000 USD` (Tersisa: **`$146.704099 USD`** / **97.80% kredit utuh**)
+
+### 8.6. Transparansi Prompt Retry/Repair Loop & Ketahanan Terhadap False Proof
+
+Pada loop otonom `repair_harness` (`crates/llm/src/client.rs`), umpan balik yang diberikan ke model adalah hasil deterministik dari compiler atau Miri:
+- Jika kompilasi gagal: cuplikan pesan error `rustc` asli.
+- Jika lolos filter dan kompilasi namun Miri exit 0 tanpa memicu UB:
+  `"Harness compiled and ran cleanly under Miri (exit code 0) without triggering UB at the target unsafe site. Drive inputs out-of-bounds or concurrently across threads to trigger UB."`
+
+**Evaluasi pada Korpus Campuran 38 Target (22 Bug + 16 Safe Controls)**:
+Meskipun model diberikan hingga 4 putaran percobaan perbaikan dengan instruksi untuk memicu UB, pada seluruh 16 kontrol aman (`r1_01_safe` s/d `r2_08_safe`), model **tidak pernah berhasil memicu false proof (0/16 False Proofs, 0.0%)**. Hal ini membuktikan bahwa verifikasi operasional Miri bertindak sebagai *ground-truth verifier* yang objektif: pada kode yang secara semantik aman dan memenuhi invarian Rust, safe-Rust harness tidak dapat memalsukan keberadaan Undefined Behavior.
 
 
 

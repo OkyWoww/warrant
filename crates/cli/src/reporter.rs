@@ -217,6 +217,13 @@ impl AuditReport {
         let status_color = if is_clean { "#10b981" } else { "#ef4444" };
         let status_text = if is_clean { "AUDIT CLEAN: 0 PROVEN BUGS" } else { "PROVEN SOUNDNESS BUGS DETECTED" };
 
+        let is_replay = self.backend_used.contains("REPLAY") || self.backend_used.contains("cached");
+        let replay_badge_html = if is_replay {
+            r#"<div class="replay-badge" style="background: #1e3a8a44; color: #60a5fa; border: 1px solid #3b82f688; padding: 0.5rem 1rem; border-radius: 9999px; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">⚡ [OFFLINE REPLAY] Verified Cached Telemetry</div>"#
+        } else {
+            ""
+        };
+
         let mut proven_cards = String::new();
         if self.proven_findings.is_empty() {
             proven_cards.push_str(r#"
@@ -594,13 +601,20 @@ impl AuditReport {
                 <h1>🛡️ WARRANT Soundness Report</h1>
                 <div class="tagline">Proof-First Automated Soundness Auditor for Rust unsafe Code</div>
             </div>
-            <div class="status-pill">{status_text}</div>
+            <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+                {replay_badge_html}
+                <div class="status-pill">{status_text}</div>
+            </div>
         </header>
 
         <section class="summary-grid">
             <div class="stat-card">
                 <div class="stat-label">Target Scanned</div>
                 <div class="stat-value" style="font-size: 1.1rem; word-break: break-all;">{target_path}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Execution Mode / Backend</div>
+                <div class="stat-value" style="font-size: 0.95rem; color: var(--accent);">{backend_used}</div>
             </div>
             <div class="stat-card">
                 <div class="stat-label">Unsafe Candidates</div>
@@ -660,6 +674,8 @@ impl AuditReport {
             crate_name = html_escape(&self.crate_name),
             status_color = status_color,
             status_text = status_text,
+            replay_badge_html = replay_badge_html,
+            backend_used = html_escape(&self.backend_used),
             target_path = html_escape(&self.target_path),
             total_candidates = self.total_candidates,
             proven_count = self.proven_count(),

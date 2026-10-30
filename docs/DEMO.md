@@ -21,9 +21,16 @@ Reference style (structure only; do not copy designs, branding, or wording): a o
 
 Cut order if the video runs long: benchmark detail, Act 3, the stakes slide. Never cut Act 1.
 
-## 2. Make the product recordable: events.jsonl
+## 2. Make the product recordable: events.jsonl & Ledger-Driven Captions
 
-`warrant audit --events <path>` writes one JSON object per line (schema in `docs/SPEC.md` section 4). The step chips, tool-call captions, elapsed timers, cost counters, and speed labels in the video MUST be generated from this file, not drawn by hand.
+`warrant audit --events <path>` and `warrant demo --events <path>` write one JSON object per line (schema in `docs/SPEC.md` section 4). The step chips, tool-call captions, elapsed timers, cost counters, and speed labels in the video MUST be generated programmatically from `events.jsonl` (and `docs/DEMO_CACHE.json`), not drawn by hand, typed, or hardcoded.
+
+Every on-screen model call caption is derived directly from the `CallRecord` ledger fields (`prompt_tokens -> completion_tokens`, `latency_ms`, `cost_usd`, and model `muse-spark-1.3-contributor`). Real measured examples from the demo cache:
+- `c-0001` (flagship SmallVec bug): hypothesis `1,056 prompt -> 2,999 completion tokens`, `10,596 ms`, `$0.014066 USD`, resolved model `muse-spark-1.3-contributor`.
+- `c-0002` (concurrency mutant): hypothesis `675 prompt -> 3,211 completion tokens`, `11,048 ms`, `$0.014526 USD`, resolved model `muse-spark-1.3-contributor`.
+- `c-0003` (sound safe control): hypothesis `751 prompt -> 3,287 completion tokens`, `11,387 ms`, `$0.014967 USD`, resolved model `muse-spark-1.3-contributor` (held back as `UNPROVEN`).
+
+Reference video style is followed for structure only; never copy branding, trademarks, or visual assets of reference materials.
 
 Stage names for the chips (same as the event `stage` field): `extract`, `hypothesis`, `harness`, `compile`, `miri_red`, `signature`, `location`, `tier`, `patch`, `sanity`, `evidence`. A final chip `ci_gate` is shown for the CLI exit-code scene.
 
@@ -31,10 +38,11 @@ Stage names for the chips (same as the event `stage` field): `extract`, `hypothe
 
 1. Real output carries the label `REAL OUTPUT - captured on <OS>, <date>`. Never show typed or mocked output under that label.
 2. If a recording is sped up, show `<N> s real, shown faster` on screen, using the elapsed time from `events.jsonl`.
-3. If a scene is a cached replay, label it `REPLAY`.
+3. If a scene is a cached replay, label it `[OFFLINE REPLAY]`.
 4. Seeded benchmark cases are labeled `seeded`. Real-world cases are labeled with their source and license.
 5. Every number on screen comes from a results file committed in the repo. No rounding up, no hand-picked runs.
 6. Show one UNPROVEN finding and say what it means.
+7. **Sandbox Honesty**: Sandbox Docker (`sandbox/Dockerfile`) disediakan di repositori, namun seluruh evaluasi benchmark dan demo pada fixture publik ini dieksekusi menggunakan `LocalMiriRunner` langsung pada host Windows.
 
 ## 4. Must not appear in the video or repo
 
@@ -69,3 +77,7 @@ Stage names for the chips (same as the event `stage` field): `extract`, `hypothe
 **Single point of failure.** The demo depends on one real-world case that reproduces cleanly. Reinforce first: prepare a second candidate and record both early.
 
 **Pre-mortem.** The video fails if it runs over three minutes, shows pre-event material, or is recorded in the last hour before the deadline. Mitigations: lock this storyboard, measure length, run the provenance audit, and schedule recording at least one day before the deadline (4 Nov, 9 PM ET, about 09:00 WIB on 5 Nov).
+
+## 8. Optional Future Model Version Exploration (Post-Freeze)
+
+If time permits after all priority audit closure and recording freeze steps are verified, an optional evaluation comparing `muse-spark-1.3` against `muse-spark-1.2` can be conducted on the 8 Gate-1 candidates to measure version-over-version repair iteration efficiency and latency differences.

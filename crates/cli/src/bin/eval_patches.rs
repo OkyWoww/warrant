@@ -42,6 +42,10 @@ struct Args {
     /// Hard spend ceiling for this run in USD (enforced by CostTracker before every call)
     #[arg(long, default_value_t = 2.5)]
     budget_usd: f64,
+
+    /// Optional target filter (e.g. `smallvec_r1_demo`)
+    #[arg(long)]
+    target: Option<String>,
 }
 
 struct PatchTarget {
@@ -196,7 +200,12 @@ async fn main() -> Result<()> {
     let mut rows: Vec<Row> = Vec::new();
     let mut findings = Vec::new();
 
-    for t in PRIMARY_TARGETS {
+    let targets: Vec<&PatchTarget> = PRIMARY_TARGETS
+        .iter()
+        .filter(|t| args.target.as_ref().map(|tgt| t.id == tgt.as_str()).unwrap_or(true))
+        .collect();
+
+    for t in targets {
         let t0 = Instant::now();
         let before = tracker.call_totals();
         let path = PathBuf::from(t.file_path);

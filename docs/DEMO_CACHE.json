@@ -1,102 +1,146 @@
 {
-  "captured_at_rfc3339": "2026-10-29T06:21:59Z",
+  "captured_at_rfc3339": "2026-10-30T02:27:22Z",
   "model": "muse-spark-1.3",
-  "total_calls": 5,
-  "total_prompt_tokens": 4382,
-  "total_completion_tokens": 15691,
-  "total_cost_usd": 0.071213,
+  "total_calls": 9,
+  "total_prompt_tokens": 9458,
+  "total_completion_tokens": 36964,
+  "total_cost_usd": 0.169685,
   "cases": {
     "c-0001": {
       "candidate_id": "c-0001",
       "file_path": "bench/real_world_demo/smallvec_r1_demo.rs",
       "hypothesis": {
-        "id": "warrant-r1-smallvec-insert",
+        "id": "fix-0001-r1",
         "candidate_id": "c-0001",
         "ub_class": "ub_oob",
-        "explanation": "insert_many shifts existing inline elements past the 2-element buffer without growing capacity, so inserting into a full SmallVec writes out of bounds.",
-        "harness_code": "#![forbid(unsafe_code)]\nextern crate std;\n#[cfg(test)]\nmod warrant_proof {\n    #![forbid(unsafe_code)]\n    extern crate std;\n    use super::*;\n    #[test]\n    fn proof_insert_overflow() {\n        let mut v = SmallVec::<u32>::new();\n        v.push(1);\n        v.push(2);\n        let extra = [3u32, 4u32, 5u32];\n        v.insert_many(0, &extra);\n        std::hint::black_box(v.len());\n        std::hint::black_box(v.get(0));\n    }\n}",
+        "explanation": "Inserting 4 elements into a full 2-element inline buffer shifts existing data far past the allocation, causing an out-of-bounds write.",
+        "harness_code": "#![forbid(unsafe_code)]\nextern crate std;\n#[cfg(test)]\nmod warrant_proof {\n    #![forbid(unsafe_code)]\n    extern crate std;\n    use super::*;\n    #[test]\n    fn proof_insert_oob() {\n        let mut v = SmallVec::<u32>::new();\n        v.push(10);\n        v.push(20);\n        let extra = [30u32, 40u32, 50u32, 60u32];\n        v.insert_many(0, &extra);\n        std::hint::black_box(v.len());\n        std::hint::black_box(v.get(0));\n        std::hint::black_box(v.get(1));\n    }\n}\n",
         "suggested_miri_flags": [],
         "expected_trigger": "out-of-bounds write"
       },
-      "patch_code": "pub struct SmallVec<T> {\n    data: [T; 2],\n    len: usize,\n}\n\nimpl<T: Copy + Default> SmallVec<T> {\n    pub fn new() -> Self {\n        Self {\n            data: [T::default(); 2],\n            len: 0,\n        }\n    }\n\n    pub fn push(&mut self, val: T) {\n        if self.len < 2 {\n            self.data[self.len] = val;\n            self.len += 1;\n        }\n    }\n\n    pub fn len(&self) -> usize {\n        self.len\n    }\n\n    pub fn is_empty(&self) -> bool {\n        self.len == 0\n    }\n\n    pub fn insert_many(&mut self, index: usize, elements: &[T]) {\n        if index > self.len {\n            return;\n        }\n        let num_items = elements.len();\n        let new_len = match self.len.checked_add(num_items) {\n            Some(n) => n,\n            None => return,\n        };\n        if new_len > self.data.len() {\n            return;\n        }\n        let tail_len = self.len - index;\n        for i in (0..tail_len).rev() {\n            let src = index + i;\n            let dst = index + num_items + i;\n            if dst < self.data.len() && src < self.data.len() {\n                self.data[dst] = self.data[src];\n            } else {\n                return;\n            }\n        }\n        for (i, &elem) in elements.iter().enumerate() {\n            if let Some(slot) = self.data.get_mut(index + i) {\n                *slot = elem;\n            } else {\n                return;\n            }\n        }\n        self.len = new_len;\n    }\n\n    pub fn get(&self, index: usize) -> Option<T> {\n        if index < self.len {\n            Some(self.data[index])\n        } else {\n            None\n        }\n    }\n}\n\nimpl<T: Copy + Default> Default for SmallVec<T> {\n    fn default() -> Self {\n        Self::new()\n    }\n}",
+      "patch_code": "//! # Real-World Historical RustSec Benchmark: `smallvec` (RUSTSEC-2021-0003 / CVE-2021-25900)\n//!\n//! Self-contained host-compilable reproduction adapted from historical RustSec advisory patterns.\n//! Original Crate: `smallvec` (affected `>= 0.6.3, < 0.6.14`, e.g. v0.6.9)\n//! Original License: MIT / Apache-2.0 (Dual License)\n//! Original Author: The Servo Project Developers\n//! Advisory: https://rustsec.org/advisories/RUSTSEC-2021-0003.html\n//!\n//! In affected versions of `smallvec`, calling `insert_many` or inserting elements\n//! into an inline `SmallVec` calculated the copy offset before verifying that the\n//! inline storage buffer had sufficient capacity to hold the additional elements,\n//! leading to an out-of-bounds memory write via `ptr::copy`.\n\npub struct SmallVec<T> {\n    data: [T; 2],\n    len: usize,\n}\n\nimpl<T: Copy + Default> SmallVec<T> {\n    pub fn new() -> Self {\n        Self {\n            data: [T::default(); 2],\n            len: 0,\n        }\n    }\n\n    pub fn push(&mut self, val: T) {\n        if self.len < 2 {\n            self.data[self.len] = val;\n            self.len += 1;\n        }\n    }\n\n    pub fn len(&self) -> usize {\n        self.len\n    }\n\n    pub fn is_empty(&self) -> bool {\n        self.len == 0\n    }\n\n    pub fn insert_many(&mut self, index: usize, elements: &[T]) {\n        assert!(index <= self.len);\n        let num_items = elements.len();\n        let new_len = match self.len.checked_add(num_items) {\n            Some(n) => n,\n            None => return,\n        };\n        if new_len > self.data.len() {\n            return;\n        }\n        if index > self.len {\n            return;\n        }\n        unsafe {\n            let ptr = self.data.as_mut_ptr();\n            std::ptr::copy(ptr.add(index), ptr.add(index + num_items), self.len - index);\n            std::ptr::copy_nonoverlapping(elements.as_ptr(), ptr.add(index), num_items);\n        }\n        self.len = new_len;\n    }\n\n    pub fn get(&self, index: usize) -> Option<T> {\n        if index < self.len {\n            Some(self.data[index])\n        } else {\n            None\n        }\n    }\n}\n\nimpl<T: Copy + Default> Default for SmallVec<T> {\n    fn default() -> Self {\n        Self::new()\n    }\n}",
       "call_records": [
         {
           "label": "hypothesis:c-0001",
           "model": "muse-spark-1.3",
           "http_status": 200,
           "prompt_tokens": 1056,
-          "completion_tokens": 2999,
+          "completion_tokens": 3090,
           "cached_tokens": 0,
-          "latency_ms": 10596,
-          "cost_micro_usd": 14066,
+          "latency_ms": 19262,
+          "cost_micro_usd": 14453,
+          "usage_reported": true
+        },
+        {
+          "label": "repair:c-0001",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 1304,
+          "completion_tokens": 3696,
+          "cached_tokens": 0,
+          "latency_ms": 19844,
+          "cost_micro_usd": 17338,
+          "usage_reported": true
+        },
+        {
+          "label": "repair:c-0001",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 1291,
+          "completion_tokens": 4478,
+          "cached_tokens": 0,
+          "latency_ms": 29177,
+          "cost_micro_usd": 20645,
           "usage_reported": true
         },
         {
           "label": "patch:c-0001",
           "model": "muse-spark-1.3",
           "http_status": 200,
-          "prompt_tokens": 1129,
-          "completion_tokens": 4178,
+          "prompt_tokens": 1181,
+          "completion_tokens": 3677,
           "cached_tokens": 0,
-          "latency_ms": 18941,
-          "cost_micro_usd": 19168,
+          "latency_ms": 22061,
+          "cost_micro_usd": 17104,
           "usage_reported": true
         }
       ],
-      "total_prompt_tokens": 2185,
-      "total_completion_tokens": 7177,
-      "total_cost_micro_usd": 33234
+      "total_prompt_tokens": 4832,
+      "total_completion_tokens": 14941,
+      "total_cost_micro_usd": 69540
     },
     "c-0002": {
       "candidate_id": "c-0002",
       "file_path": "bench/pairs/r2_01_cell_sync_mutant.rs",
       "hypothesis": {
-        "id": "w-0002",
+        "id": "fix-c0002-r2",
         "candidate_id": "c-0002",
         "ub_class": "data_race",
-        "explanation": "Cell uses non-atomic loads and stores, so concurrent increment through a shared reference performs unsynchronized access.",
-        "harness_code": "#![forbid(unsafe_code)]\nextern crate std;\n#[cfg(test)]\nmod warrant_proof {\n    #![forbid(unsafe_code)]\n    extern crate std;\n    use super::*;\n    #[test]\n    fn proof_race() {\n        let counter = TelemetryCounter::new(0);\n        std::thread::scope(|s| {\n            s.spawn(|| {\n                for _ in 0..100 {\n                    counter.increment();\n                }\n                std::hint::black_box(counter.get());\n            });\n            s.spawn(|| {\n                for _ in 0..100 {\n                    counter.increment();\n                }\n                std::hint::black_box(counter.get());\n            });\n        });\n        std::hint::black_box(counter.get());\n    }\n}",
+        "explanation": "TelemetryCounter uses Cell<usize> with an unsafe Sync impl, so concurrent increment from two threads performs unsynchronized non-atomic read-modify-writes on the same location.",
+        "harness_code": "#![forbid(unsafe_code)]\nextern crate std;\n#[cfg(test)]\nmod warrant_proof {\n    #![forbid(unsafe_code)]\n    extern crate std;\n    use super::*;\n    #[test]\n    fn proof_race() {\n        let shared = TelemetryCounter::new(0);\n        std::thread::scope(|s| {\n            s.spawn(|| {\n                for _ in 0..1000 {\n                    shared.increment();\n                }\n                std::hint::black_box(shared.get());\n            });\n            s.spawn(|| {\n                for _ in 0..1000 {\n                    shared.increment();\n                }\n                std::hint::black_box(shared.get());\n            });\n        });\n        std::hint::black_box(shared.get());\n    }\n}\n",
         "suggested_miri_flags": [],
-        "expected_trigger": "race detected"
+        "expected_trigger": "concurrent access detected"
       },
-      "patch_code": "use core::sync::atomic::{AtomicUsize, Ordering};\n\npub struct TelemetryCounter {\n    count: AtomicUsize,\n}\n\nimpl TelemetryCounter {\n    pub fn new(init: usize) -> Self {\n        Self {\n            count: AtomicUsize::new(init),\n        }\n    }\n\n    pub fn increment(&self) {\n        self.count.fetch_add(1, Ordering::SeqCst);\n    }\n\n    pub fn get(&self) -> usize {\n        self.count.load(Ordering::SeqCst)\n    }\n}",
+      "patch_code": "use core::sync::atomic::{AtomicUsize, Ordering};\n\npub struct TelemetryCounter {\n    count: AtomicUsize,\n}\n\nimpl TelemetryCounter {\n    pub fn new(init: usize) -> Self {\n        Self {\n            count: AtomicUsize::new(init),\n        }\n    }\n\n    pub fn increment(&self) {\n        self.count.fetch_add(1, Ordering::Relaxed);\n    }\n\n    pub fn get(&self) -> usize {\n        self.count.load(Ordering::Relaxed)\n    }\n}",
       "call_records": [
         {
           "label": "hypothesis:c-0002",
           "model": "muse-spark-1.3",
           "http_status": 200,
           "prompt_tokens": 675,
-          "completion_tokens": 3211,
-          "cached_tokens": 625,
-          "latency_ms": 10860,
-          "cost_micro_usd": 13803,
+          "completion_tokens": 4415,
+          "cached_tokens": 0,
+          "latency_ms": 24093,
+          "cost_micro_usd": 19608,
+          "usage_reported": true
+        },
+        {
+          "label": "repair:c-0002",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 917,
+          "completion_tokens": 5774,
+          "cached_tokens": 0,
+          "latency_ms": 28960,
+          "cost_micro_usd": 25686,
+          "usage_reported": true
+        },
+        {
+          "label": "repair:c-0002",
+          "model": "muse-spark-1.3",
+          "http_status": 200,
+          "prompt_tokens": 914,
+          "completion_tokens": 7157,
+          "cached_tokens": 0,
+          "latency_ms": 44049,
+          "cost_micro_usd": 31560,
           "usage_reported": true
         },
         {
           "label": "patch:c-0002",
           "model": "muse-spark-1.3",
           "http_status": 200,
-          "prompt_tokens": 771,
-          "completion_tokens": 2016,
-          "cached_tokens": 241,
-          "latency_ms": 10099,
-          "cost_micro_usd": 9267,
+          "prompt_tokens": 807,
+          "completion_tokens": 1685,
+          "cached_tokens": 0,
+          "latency_ms": 10258,
+          "cost_micro_usd": 8170,
           "usage_reported": true
         }
       ],
-      "total_prompt_tokens": 1446,
-      "total_completion_tokens": 5227,
-      "total_cost_micro_usd": 23070
+      "total_prompt_tokens": 3313,
+      "total_completion_tokens": 19031,
+      "total_cost_micro_usd": 85024
     },
     "c-0003": {
       "candidate_id": "c-0003",
       "file_path": "bench/pairs/r1_01_slice_get_safe.rs",
       "hypothesis": {
-        "id": "warrant-c0003-r1",
+        "id": "c-0003-r1",
         "candidate_id": "c-0003",
         "ub_class": "ub_oob",
-        "explanation": "Cursor advance plus offset can move index past data length, reaching get_unchecked out of bounds.",
-        "harness_code": "#![forbid(unsafe_code)]\nextern crate std;\n#[cfg(test)]\nmod warrant_proof {\n    #![forbid(unsafe_code)]\n    extern crate std;\n    use super::*;\n    #[test]\n    fn proof_oob() {\n        let mut buf = SliceBuffer::new();\n        std::hint::black_box(buf.push_frame(&[10u8, 20u8, 30u8]));\n        std::hint::black_box(buf.advance(5usize));\n        let a = buf.read_at_offset(0usize);\n        std::hint::black_box(a);\n        let b = buf.read_at_offset(100usize);\n        std::hint::black_box(b);\n        let c = buf.read_at_offset(usize::MAX);\n        std::hint::black_box(c);\n        let mut buf2 = SliceBuffer::new();\n        std::hint::black_box(buf2.push_frame(&[1u8]));\n        std::hint::black_box(buf2.advance(usize::MAX));\n        let d = buf2.read_at_offset(usize::MAX);\n        std::hint::black_box(d);\n    }\n}",
+        "explanation": "Advancing cursor beyond length then reading with large offset drives idx past backing storage toward unchecked access.",
+        "harness_code": "#![forbid(unsafe_code)]\nextern crate std;\n#[cfg(test)]\nmod warrant_proof {\n    #![forbid(unsafe_code)]\n    extern crate std;\n    use super::*;\n    #[test]\n    fn proof_oob() {\n        let mut buf = SliceBuffer::new();\n        buf.push_frame(&[1u8, 2u8, 3u8]);\n        buf.advance(10);\n        let r1 = buf.read_at_offset(0);\n        std::hint::black_box(r1);\n        let r2 = buf.read_at_offset(usize::MAX);\n        std::hint::black_box(r2);\n        let mut buf2 = SliceBuffer::new();\n        buf2.push_frame(&[9u8]);\n        buf2.advance(usize::MAX);\n        let r3 = buf2.read_at_offset(usize::MAX);\n        std::hint::black_box(r3);\n    }\n}\n",
         "suggested_miri_flags": [],
         "expected_trigger": "out-of-bounds read"
       },
@@ -107,16 +151,16 @@
           "model": "muse-spark-1.3",
           "http_status": 200,
           "prompt_tokens": 751,
-          "completion_tokens": 3287,
+          "completion_tokens": 3337,
           "cached_tokens": 0,
-          "latency_ms": 11817,
-          "cost_micro_usd": 14909,
+          "latency_ms": 16238,
+          "cost_micro_usd": 15121,
           "usage_reported": true
         }
       ],
       "total_prompt_tokens": 751,
-      "total_completion_tokens": 3287,
-      "total_cost_micro_usd": 14909
+      "total_completion_tokens": 3337,
+      "total_cost_micro_usd": 15121
     }
   },
   "call_ledger": [
@@ -125,21 +169,43 @@
       "model": "muse-spark-1.3",
       "http_status": 200,
       "prompt_tokens": 1056,
-      "completion_tokens": 2999,
+      "completion_tokens": 3090,
       "cached_tokens": 0,
-      "latency_ms": 10596,
-      "cost_micro_usd": 14066,
+      "latency_ms": 19262,
+      "cost_micro_usd": 14453,
+      "usage_reported": true
+    },
+    {
+      "label": "repair:c-0001",
+      "model": "muse-spark-1.3",
+      "http_status": 200,
+      "prompt_tokens": 1304,
+      "completion_tokens": 3696,
+      "cached_tokens": 0,
+      "latency_ms": 19844,
+      "cost_micro_usd": 17338,
+      "usage_reported": true
+    },
+    {
+      "label": "repair:c-0001",
+      "model": "muse-spark-1.3",
+      "http_status": 200,
+      "prompt_tokens": 1291,
+      "completion_tokens": 4478,
+      "cached_tokens": 0,
+      "latency_ms": 29177,
+      "cost_micro_usd": 20645,
       "usage_reported": true
     },
     {
       "label": "patch:c-0001",
       "model": "muse-spark-1.3",
       "http_status": 200,
-      "prompt_tokens": 1129,
-      "completion_tokens": 4178,
+      "prompt_tokens": 1181,
+      "completion_tokens": 3677,
       "cached_tokens": 0,
-      "latency_ms": 18941,
-      "cost_micro_usd": 19168,
+      "latency_ms": 22061,
+      "cost_micro_usd": 17104,
       "usage_reported": true
     },
     {
@@ -147,21 +213,43 @@
       "model": "muse-spark-1.3",
       "http_status": 200,
       "prompt_tokens": 675,
-      "completion_tokens": 3211,
-      "cached_tokens": 625,
-      "latency_ms": 10860,
-      "cost_micro_usd": 13803,
+      "completion_tokens": 4415,
+      "cached_tokens": 0,
+      "latency_ms": 24093,
+      "cost_micro_usd": 19608,
+      "usage_reported": true
+    },
+    {
+      "label": "repair:c-0002",
+      "model": "muse-spark-1.3",
+      "http_status": 200,
+      "prompt_tokens": 917,
+      "completion_tokens": 5774,
+      "cached_tokens": 0,
+      "latency_ms": 28960,
+      "cost_micro_usd": 25686,
+      "usage_reported": true
+    },
+    {
+      "label": "repair:c-0002",
+      "model": "muse-spark-1.3",
+      "http_status": 200,
+      "prompt_tokens": 914,
+      "completion_tokens": 7157,
+      "cached_tokens": 0,
+      "latency_ms": 44049,
+      "cost_micro_usd": 31560,
       "usage_reported": true
     },
     {
       "label": "patch:c-0002",
       "model": "muse-spark-1.3",
       "http_status": 200,
-      "prompt_tokens": 771,
-      "completion_tokens": 2016,
-      "cached_tokens": 241,
-      "latency_ms": 10099,
-      "cost_micro_usd": 9267,
+      "prompt_tokens": 807,
+      "completion_tokens": 1685,
+      "cached_tokens": 0,
+      "latency_ms": 10258,
+      "cost_micro_usd": 8170,
       "usage_reported": true
     },
     {
@@ -169,10 +257,10 @@
       "model": "muse-spark-1.3",
       "http_status": 200,
       "prompt_tokens": 751,
-      "completion_tokens": 3287,
+      "completion_tokens": 3337,
       "cached_tokens": 0,
-      "latency_ms": 11817,
-      "cost_micro_usd": 14909,
+      "latency_ms": 16238,
+      "cost_micro_usd": 15121,
       "usage_reported": true
     }
   ]

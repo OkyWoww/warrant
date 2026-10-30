@@ -85,11 +85,17 @@ mod warrant_proof {
     #[test]
     fn sanity_smallvec_insert_many() {
         let mut sv: SmallVec<u64> = SmallVec::new();
-        sv.push(10);
-        sv.insert_many(0, &[5]);
+        sv.insert_many(0, &[111, 222]);
         assert_eq!(sv.len(), 2);
-        assert_eq!(sv.get(0), Some(5));
-        assert_eq!(sv.get(1), Some(10));
+        assert_eq!(sv.get(0), Some(111));
+        assert_eq!(sv.get(1), Some(222));
+
+        let mut sv2: SmallVec<u64> = SmallVec::new();
+        sv2.push(999);
+        sv2.insert_many(0, &[888]);
+        assert_eq!(sv2.len(), 2);
+        assert_eq!(sv2.get(0), Some(888));
+        assert_eq!(sv2.get(1), Some(999));
     }
 }
 "#;
@@ -193,7 +199,7 @@ pub async fn run_demo(opts: DemoOptions) -> Result<i32> {
             (
                 Box::new(MockLlmClient::new().with_cached_patches(cached_patches.clone())),
                 true,
-                "muse-spark-1.3 (cached)".to_string(),
+                "muse-spark-1.3 [OFFLINE REPLAY]".to_string(),
             )
         } else {
             match MetaClient::new(MetaApiConfig::default(), cost_tracker.clone()) {
@@ -206,7 +212,7 @@ pub async fn run_demo(opts: DemoOptions) -> Result<i32> {
                 Err(_) => (
                     Box::new(MockLlmClient::new().with_cached_patches(cached_patches)),
                     true,
-                    "muse-spark-1.3 (cached)".to_string(),
+                    "muse-spark-1.3 [OFFLINE REPLAY]".to_string(),
                 ),
             }
         };

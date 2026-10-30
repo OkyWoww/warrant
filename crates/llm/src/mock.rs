@@ -592,19 +592,24 @@ impl<T: Copy + Default> SmallVec<T> {
 
     /// REMEDIATED (RUSTSEC-2021-0003):
     /// Verifies remaining inline capacity (`self.data.len() - self.len`) before `ptr::copy`.
+    /// Preserves all inserted elements intact without silent truncation, and safely rejects
+    /// capacity overflow without pointer UB.
     pub fn insert_many(&mut self, index: usize, elements: &[T]) {
         assert!(index <= self.len);
-        let available = self.data.len().saturating_sub(self.len);
-        let num_items = elements.len().min(available);
+        let num_items = elements.len();
         if num_items == 0 {
             return;
         }
+        let new_len = match self.len.checked_add(num_items) {
+            Some(n) if n <= self.data.len() => n,
+            _ => return,
+        };
         unsafe {
             let ptr = self.data.as_mut_ptr();
             std::ptr::copy(ptr.add(index), ptr.add(index + num_items), self.len - index);
             std::ptr::copy_nonoverlapping(elements.as_ptr(), ptr.add(index), num_items);
         }
-        self.len += num_items;
+        self.len = new_len;
     }
 
     pub fn get(&self, index: usize) -> Option<T> {

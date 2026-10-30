@@ -56,7 +56,7 @@ STRICT INVARIANTS:
 1. Public Signatures Preserved: You MUST NOT delete, rename, or change the parameter types, return types, or public visibility of any public function or struct.
 2. Anti-Bypass Guard: You MUST NOT insert `todo!()`, `unimplemented!()`, `unreachable!()`, `std::process::exit`, `panic!()`, or empty `Default::default()` bodies.
 3. No Cfg Evasion: You MUST NOT use `#[cfg(not(miri))]` or `#[cfg(false)]`.
-4. R1 Soundness: For out-of-bounds/unchecked access, enforce explicit bounds checks (`if idx < len`, `.get()`, `checked_add`).
+4. R1 Soundness: For out-of-bounds/unchecked access, enforce explicit bounds checks (`if idx < len`, `.get()`, `checked_add`). For buffer insertion (e.g. SmallVec), do NOT silently truncate elements; if `len + elements.len() > capacity`, reject safely without partial truncation or pointer UB.
 5. R2 Soundness: For Send/Sync data races, replace non-thread-safe primitives (`Cell`, `RefCell`, `Rc`, raw pointer) with thread-safe synchronization (`AtomicUsize`, `Mutex`, `RwLock`, `Arc`).
 6. Keep every existing public and private item name; keep method behavior for valid inputs (a sanity test with valid input must still produce the same output).
 7. Do NOT include a `warrant_proof` module or any `#[cfg(test)]` module; the verifier appends its own harness.
